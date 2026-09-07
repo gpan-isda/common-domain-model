@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Spike module: proves the FpML ingest surface can be built as an
+  independent Maven module consuming a published cdm-java artifact for
+  core types. Simulates the target multi-repo state (a separate
+  cdm-fpml-mappings repo) while staying in-tree. Not a child of
+  cdm-parent - intentionally standalone so classpath/dependency
+  resolution mirrors an external consumer.
+
+  Related: finos/common-domain-model discussion #4855.
+
+  Usage:
+    mvn -pl rosetta-source install -P core -DskipTests   # install core-only cdm-java to ~/.m2
+    cd rosetta-source-fpml && mvn clean install -DskipTests  # build FpML against core
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.finos.cdm</groupId>
+    <artifactId>cdm-fpml-mappings</artifactId>
+    <version>0.0.0.master-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>cdm-fpml-mappings (spike)</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>8</maven.compiler.release>
+
+        <cdm.core.version>0.0.0.master-SNAPSHOT</cdm.core.version>
+        <rosetta.dsl.version>10.2.2</rosetta.dsl.version>
+        <rosetta.bundle.version>12.3.1</rosetta.bundle.version>
+        <rosetta.code-gen.version>${rosetta.bundle.version}</rosetta.code-gen.version>
+        <rune-fpml.version>3.2.0</rune-fpml.version>
+        <guice.version>6.0.0</guice.version>
+    </properties>
+
+    <build>
+        <!-- Point primary source dir at the sibling module's ingest-fpml source root -->
+        <sourceDirectory>../rosetta-source/src/ingest-fpml/java</sourceDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-rune-fpml-rosetta</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/parent-dependency</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.regnosys.rune-fpml</groupId>
+                                    <artifactId>rosetta-source</artifactId>
+                                    <version>${rune-fpml.version}</version>
+                                    <includes>fpml/rosetta/*.rosetta</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-rosetta</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/parent-dependency/fpml/rosetta</directory>
+                                    <includes>
+                                        <include>*.rosetta</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>../rosetta-source/src/main/rosetta</directory>
+                                    <includes>
+                                        <include>ingest-fpml-*.rosetta</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.finos.rune</groupId>
+                <artifactId>rune-maven-plugin</artifactId>
+                <version>${rosetta.dsl.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.regnosys.rosetta.code-generators</groupId>
+                        <artifactId>default-cdm-generators</artifactId>
+                        <version>${rosetta.code-gen.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.finos.rune</groupId>
+                        <artifactId>rune-lang</artifactId>
+                        <version>${rosetta.dsl.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.finos.rune</groupId>
+                        <artifactId>rune-runtime</artifactId>
+                        <version>${rosetta.dsl.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <rosettaConfig>${project.basedir}/../rosetta-source/src/main/resources/rosetta-config.yml</rosettaConfig>
+                            <sourceRoots>
+                                <sourceRoot>${project.build.directory}/classes/cdm/rosetta</sourceRoot>
+                            </sourceRoots>
+                            <!--
+                              Loosened classpath filter: also scan cdm-java jar so core Rosetta
+                              types (Party, Product, etc.) resolve from the classpath rather
+                              than local .rosetta sources. This is the mechanism that would
+                              back a real multi-repo split.
+                            -->
+                            <classPathLookupFilter>.*org[\\/]finos[\\/]rune[\\/]rune-runtime.*\.jar|.*org[\\/]finos[\\/]cdm[\\/]cdm-java.*\.jar</classPathLookupFilter>
+                            <languages>
+                                <language>
+                                    <setup>com.regnosys.rosetta.RosettaStandaloneSetup</setup>
+                                    <outputConfigurations>
+                                        <outputConfiguration>
+                                            <outputDirectory>src/generated/java/</outputDirectory>
+                                        </outputConfiguration>
+                                    </outputConfigurations>
+                                </language>
+                            </languages>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/generated/java/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/generated</directory>
+                                    <includes>
+                                        <include>**/**</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <parameters>true</parameters>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Core CDM types resolved from the published artifact, NOT from source. -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>cdm-java</artifactId>
+            <version>${cdm.core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.rune</groupId>
+            <artifactId>rune-runtime</artifactId>
+            <version>${rosetta.dsl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.finos.rune-common</groupId>
+            <artifactId>rune-common</artifactId>
+            <version>${rosetta.bundle.version}</version>
+        </dependency>
+
+        <!-- Upstream FpML model (needed by the mapping files) -->
+        <dependency>
+            <groupId>com.regnosys.rune-fpml</groupId>
+            <artifactId>rosetta-source</artifactId>
+            <version>${rune-fpml.version}</version>
+        </dependency>
+
+        <!-- Guice for CdmFpmlIngestRuntimeModule -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
