@@ -257,6 +257,67 @@
             </build>
         </profile>
         <profile>
+            <!--
+              Core-only build: excludes FpML ingest .rosetta files, the FpML upstream
+              rosetta dependency-unpack, and the src/ingest-fpml/java/ Java source root.
+              Produces a cdm-java artifact without any cdm.ingest.fpml.* classes.
+              Consumes the reflective install in CdmRuntimeModule (no static coupling).
+            -->
+            <id>core</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-rune-fpml-rosetta</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
+                                    <resources combine.self="override">
+                                        <resource>
+                                            <directory>src/main/rosetta</directory>
+                                            <includes>
+                                                <include>*.rosetta</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>ingest-fpml-*.rosetta</exclude>
+                                            </excludes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add-ingest-fpml-source</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>json-schema</id>
             <build>
                 <plugins>
@@ -490,6 +551,18 @@
                             <sources>
                                 <source>src/generated/java/</source>
                                 <source>src/main/rosetta/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-ingest-fpml-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/ingest-fpml/java/</source>
                             </sources>
                         </configuration>
                     </execution>

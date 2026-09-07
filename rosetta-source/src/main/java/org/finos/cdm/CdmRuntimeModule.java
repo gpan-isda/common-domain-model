@@ -4,17 +4,13 @@ import cdm.base.datetime.functions.*;
 import cdm.base.math.functions.*;
 import cdm.base.staticdata.codelist.LoadCodeListImpl;
 import cdm.base.staticdata.codelist.functions.LoadCodeList;
-import cdm.ingest.fpml.confirmation.common.functions.StringContains;
-import cdm.ingest.fpml.confirmation.common.functions.StringContainsImpl;
-import cdm.ingest.fpml.confirmation.pricequantity.functions.*;
-import cdm.ingest.fpml.confirmation.product.commodityoption.functions.CalculateCommodityCalculationPeriods;
 import cdm.observable.asset.calculatedrate.functions.IndexValueObservation;
 import cdm.observable.asset.fro.functions.IndexValueObservationEmptyDataProvider;
 import cdm.product.common.schedule.functions.*;
 import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 import com.regnosys.rosetta.common.hashing.ReferenceConfig;
 import com.regnosys.rosetta.common.postprocess.qualify.QualificationHandlerProvider;
-import com.regnosys.runefpml.RuneFpmlRuntimeModule;
 import com.rosetta.model.lib.ModuleConfig;
 import com.rosetta.model.lib.qualify.QualifyFunctionFactory;
 import com.rosetta.model.lib.validation.ValidatorFactory;
@@ -26,8 +22,9 @@ public class CdmRuntimeModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        // upstream model dependency
-        install(new RuneFpmlRuntimeModule());
+        // FpML ingest surface is loaded reflectively so a core-only build
+        // (which excludes src/ingest-fpml/java) still compiles and runs.
+        installIfPresent("org.finos.cdm.ingest.fpml.CdmFpmlIngestRuntimeModule");
 
         bind(QualifyFunctionFactory.class).to(bindQualifyFunctionFactory());
         bind(QualificationHandlerProvider.class).to(bindQualificationConfigProvider());
@@ -66,15 +63,17 @@ public class CdmRuntimeModule extends AbstractModule {
 
 		// External FpML Coding Schemes data loader
 		bind(LoadCodeList.class).to(bindLoadCodeList());
-    
-    // Ingest
-		bind(StringContains.class).to(StringContainsImpl.class);
-		bind(CreateKey.class).to(CreateKeyImpl.class);
-		bind(CreateAssetKey.class).to(CreateAssetKeyImpl.class);
-		bind(CreateKeyForQuotedCurrencyPair.class).to(CreateKeyForQuotedCurrencyPairImpl.class);
-        bind(CalculateCommodityCalculationPeriods.class).to(CalculateCommodityCalculationPeriodsImpl.class);
-        bind(MapCommodityOptionStrikePriceSchedule.class).to(MapCommodityOptionStrikePriceScheduleImpl.class);
+    }
 
+    private void installIfPresent(String moduleClassName) {
+        try {
+            Class<?> moduleClass = Class.forName(moduleClassName);
+            install((Module) moduleClass.getDeclaredConstructor().newInstance());
+        } catch (ClassNotFoundException e) {
+            // Optional module not on classpath (e.g. -P core build); skip.
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to install optional module " + moduleClassName, e);
+        }
     }
 
 	protected Class<? extends LoadCodeList> bindLoadCodeList() {
