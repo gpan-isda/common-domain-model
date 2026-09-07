@@ -296,6 +296,7 @@
                                             </includes>
                                             <excludes>
                                                 <exclude>ingest-fpml-*.rosetta</exclude>
+                                                <exclude>ingest-fixml-*.rosetta</exclude>
                                             </excludes>
                                             <filtering>true</filtering>
                                         </resource>
