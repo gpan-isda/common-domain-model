@@ -674,6 +674,134 @@
             </build>
         </profile>
         <profile>
+            <!--
+              Core + FpML combined build. Same content as the default
+              build but excludes the FIXML placeholder mapping. Rebuilds
+              core from source (no cdm-java dependency needed). Produces
+              a cdm-java-core-fpml jar.
+
+              Equivalent to what the proposal called `-P core,fpml`;
+              hyphenated id because Maven doesn't compose the existing
+              -P core and -P fpml filter blocks cleanly (both override
+              the same copy-resources execution).
+
+              Usage:
+                mvn -pl rosetta-source clean install -P core-fpml -DskipTests
+            -->
+            <id>core-fpml</id>
+            <properties>
+                <cdm.artifactId>cdm-java-core-fpml</cdm.artifactId>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
+                                    <resources combine.self="override">
+                                        <resource>
+                                            <directory>${project.build.directory}/parent-dependency/fpml/rosetta</directory>
+                                            <includes>
+                                                <include>*.rosetta</include>
+                                            </includes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                        <resource>
+                                            <directory>src/main/rosetta</directory>
+                                            <includes>
+                                                <include>*.rosetta</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>ingest-fixml-*.rosetta</exclude>
+                                            </excludes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!--
+              Core + FIXML combined build. Rebuilds core from source
+              and adds the FIXML placeholder surface (currently
+              ingest-fixml-example.rosetta). Excludes FpML upstream and
+              FpML mappings. Produces a cdm-java-core-fixml jar.
+
+              Equivalent to what the proposal called `-P core,fixml`.
+
+              Usage:
+                mvn -pl rosetta-source clean install -P core-fixml -DskipTests
+            -->
+            <id>core-fixml</id>
+            <properties>
+                <cdm.artifactId>cdm-java-core-fixml</cdm.artifactId>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-rune-fpml-rosetta</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
+                                    <resources combine.self="override">
+                                        <resource>
+                                            <directory>src/main/rosetta</directory>
+                                            <includes>
+                                                <include>*.rosetta</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>ingest-fpml-*.rosetta</exclude>
+                                            </excludes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add-ingest-fpml-source</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>json-schema</id>
             <build>
                 <plugins>
