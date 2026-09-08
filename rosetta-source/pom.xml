@@ -552,6 +552,128 @@
             </build>
         </profile>
         <profile>
+            <!--
+              FIXML mappings-only build. Parallel of -P fpml for the
+              FIXML surface (currently a 5-line placeholder in
+              ingest-fixml-example.rosetta). In-module analogue of
+              rosetta-source-fixml/. When real FIXML mappings are
+              contributed, they flow through this profile unchanged.
+
+              Requires a prior `mvn -pl rosetta-source install -P core`
+              so cdm-java is resolvable from ~/.m2.
+
+              Usage:
+                mvn -pl rosetta-source install -P core -DskipTests
+                mvn -pl rosetta-source install -P fixml -DskipTests
+            -->
+            <id>fixml</id>
+            <properties>
+                <cdm.artifactId>cdm-java-fixml</cdm.artifactId>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.finos.cdm</groupId>
+                    <artifactId>cdm-java</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <!-- FIXML doesn't need the FpML upstream unpack. -->
+                                <id>copy-rune-fpml-rosetta</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <!-- Don't compile src/ingest-fpml/java in a FIXML build. -->
+                                <id>add-ingest-fpml-source</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
+                                    <resources combine.self="override">
+                                        <resource>
+                                            <directory>src/main/rosetta</directory>
+                                            <includes>
+                                                <include>ingest-fixml-*.rosetta</include>
+                                            </includes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.finos.rune</groupId>
+                        <artifactId>rune-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <configuration>
+                                    <classPathLookupFilter>.*org[\\/]finos[\\/]rune[\\/]rune-runtime.*\.jar|.*org[\\/]finos[\\/]cdm[\\/]cdm-java.*\.jar</classPathLookupFilter>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>Check code snippets vs cdm model</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>transform-codelist-xml-to-json</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>cdm/ingest/fixml/**</include>
+                                <include>cdm/metafields/**</include>
+                                <include>META-INF/**</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>json-schema</id>
             <build>
                 <plugins>
