@@ -555,7 +555,7 @@
             <!--
               FIXML mappings-only build. Parallel of -P fpml for the
               FIXML surface (currently a 5-line placeholder in
-              ingest-fixml-example.rosetta). In-module analogue of
+              ingest-fixml-example-func.rosetta). In-module analogue of
               rosetta-source-fixml/. When real FIXML mappings are
               contributed, they flow through this profile unchanged.
 
@@ -736,7 +736,7 @@
             <!--
               Core + FIXML combined build. Rebuilds core from source
               and adds the FIXML placeholder surface (currently
-              ingest-fixml-example.rosetta). Excludes FpML upstream and
+              ingest-fixml-example-func.rosetta). Excludes FpML upstream and
               FpML mappings. Produces a cdm-java-core-fixml jar.
 
               Equivalent to what the proposal called `-P core,fixml`.
