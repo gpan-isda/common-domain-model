@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>org.finos.cdm</groupId>
-            <artifactId>cdm-java</artifactId>
+            <artifactId>${cdm.artifactId}</artifactId>
         </dependency>
         <!-- Shared test utilities (FunctionInputCreator, FunctionCreator, CdmRuntimeModuleTesting) come from tests test-jar -->
         <dependency>

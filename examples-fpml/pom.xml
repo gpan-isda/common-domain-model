@@ -25,7 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>org.finos.cdm</groupId>
-            <artifactId>cdm-java</artifactId>
+            <artifactId>${cdm.artifactId}</artifactId>
         </dependency>
         <!-- Consume AbstractExampleTest + CdmDemoTestsModule from examples test-jar -->
         <dependency>
