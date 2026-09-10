@@ -183,6 +183,45 @@
                 <maven-javadoc-plugin.option>--no-module-directories</maven-javadoc-plugin.option>
             </properties>
         </profile>
+
+        <!-- FpML-coupled sibling modules (tests-fpml, examples-fpml) are reactor-gated by profile.
+             Default full build (no -P): full-build is active → FpML modules IN.
+             Any explicit -P deactivates full-build (Maven rule).
+             Only fpml/core-fpml re-add them.
+             Stub profiles core/fixml/core-fixml exist here solely to deactivate full-build under those flags. -->
+        <profile>
+            <id>full-build</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>tests-fpml</module>
+                <module>examples-fpml</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>fpml</id>
+            <modules>
+                <module>tests-fpml</module>
+                <module>examples-fpml</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>core-fpml</id>
+            <modules>
+                <module>tests-fpml</module>
+                <module>examples-fpml</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>core</id>
+        </profile>
+        <profile>
+            <id>fixml</id>
+        </profile>
+        <profile>
+            <id>core-fixml</id>
+        </profile>
     </profiles>
 
     <build>
