@@ -68,11 +68,14 @@
 
     <modules>
         <module>rosetta-source</module>
-        <module>tests</module>
-        <module>examples</module>
     </modules>
 
     <properties>
+        <!-- Default artifactId for rosetta-source's output. Per-profile overrides in profiles block
+             let downstream modules (tests-fpml, examples-fpml) resolve the right reactor sibling
+             under -P fpml (cdm-java-fpml) and -P core-fpml (cdm-java-core-fpml). -->
+        <cdm.artifactId>cdm-java</cdm.artifactId>
+
         <gpg.keyname>configured-by-release-profile</gpg.keyname>
         <gpg.passphrase>configured-by-release-profile</gpg.passphrase>
 
@@ -184,43 +187,79 @@
             </properties>
         </profile>
 
-        <!-- FpML-coupled sibling modules (tests-fpml, examples-fpml) are reactor-gated by profile.
-             Default full build (no -P): full-build is active → FpML modules IN.
-             Any explicit -P deactivates full-build (Maven rule).
-             Only fpml/core-fpml re-add them.
-             Stub profiles core/fixml/core-fixml exist here solely to deactivate full-build under those flags. -->
+        <!-- Reactor composition is per-profile so each build only carries modules
+             that can actually compile against the artifact rosetta-source produces. -->
+
+        <!-- Default full build: everything. Overridden by any explicit -P. -->
         <profile>
             <id>full-build</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>tests</module>
+                <module>examples</module>
                 <module>tests-fpml</module>
                 <module>examples-fpml</module>
             </modules>
         </profile>
+
+        <!-- FpML-bearing profiles: include FpML tests/examples AND redirect their
+             cdm-java dep to the matching reactor artifactId. -->
         <profile>
             <id>fpml</id>
+            <properties>
+                <cdm.artifactId>cdm-java-fpml</cdm.artifactId>
+            </properties>
             <modules>
+                <module>tests</module>
+                <module>examples</module>
                 <module>tests-fpml</module>
                 <module>examples-fpml</module>
             </modules>
         </profile>
         <profile>
             <id>core-fpml</id>
+            <properties>
+                <cdm.artifactId>cdm-java-core-fpml</cdm.artifactId>
+            </properties>
             <modules>
+                <module>tests</module>
+                <module>examples</module>
                 <module>tests-fpml</module>
                 <module>examples-fpml</module>
             </modules>
         </profile>
+
+        <!-- FpML-free profiles: tests+examples still included (they don't reference FpML),
+             but tests-fpml/examples-fpml excluded because no FpML artifact is produced. -->
         <profile>
             <id>core</id>
+            <modules>
+                <module>tests</module>
+                <module>examples</module>
+            </modules>
         </profile>
         <profile>
             <id>fixml</id>
+            <modules>
+                <module>tests</module>
+                <module>examples</module>
+            </modules>
         </profile>
         <profile>
             <id>core-fixml</id>
+            <modules>
+                <module>tests</module>
+                <module>examples</module>
+            </modules>
+        </profile>
+
+        <!-- codelists: rosetta-source skips main-source compilation, so the resulting cdm-java
+             jar has no classes. No downstream test module can compile against it. Reactor is
+             just rosetta-source itself. -->
+        <profile>
+            <id>codelists</id>
         </profile>
     </profiles>
 

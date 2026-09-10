@@ -16,7 +16,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.finos.cdm</groupId>
-                <artifactId>cdm-java</artifactId>
+                <artifactId>${cdm.artifactId}</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
         </dependencies>
