@@ -66,10 +66,15 @@
         </developer>
     </developers>
 
+    <!-- Base reactor: modules that have no compile-scope dep on cdm-java classes.
+         cdm-samples is resource-only. rosetta-source produces cdm-java itself. Both are
+         safe under every profile, including -P codelists where cdm-java has no classes.
+
+         cdm-testing (compile-scoped against cdm-java) and tests/examples/tests-fpml/examples-fpml
+         are opt-in per profile below — they can't compile against the codelists jar. -->
     <modules>
         <module>cdm-samples</module>
         <module>rosetta-source</module>
-        <module>cdm-testing</module>
     </modules>
 
     <properties>
@@ -199,6 +204,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>cdm-testing</module>
                 <module>tests</module>
                 <module>examples</module>
                 <module>tests-fpml</module>
@@ -217,6 +223,7 @@
                 <cdm.artifactId>cdm-java-core-fpml</cdm.artifactId>
             </properties>
             <modules>
+                <module>cdm-testing</module>
                 <module>tests</module>
                 <module>examples</module>
                 <module>tests-fpml</module>
@@ -229,14 +236,16 @@
         <profile>
             <id>core</id>
             <modules>
+                <module>cdm-testing</module>
                 <module>tests</module>
                 <module>examples</module>
             </modules>
         </profile>
 
         <!-- codelists: rosetta-source skips main-source compilation, so the resulting cdm-java
-             jar has no classes. No downstream test module can compile against it. Reactor is
-             just rosetta-source itself. -->
+             jar has no classes. Nothing that compiles against cdm-java can be in the reactor —
+             cdm-testing, tests, examples, tests-fpml, examples-fpml all excluded. Reactor is
+             just cdm-samples + rosetta-source (both defined in base <modules>). -->
         <profile>
             <id>codelists</id>
         </profile>
