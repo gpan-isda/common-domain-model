@@ -42,12 +42,15 @@
             <groupId>org.finos.cdm</groupId>
             <artifactId>${cdm.artifactId}</artifactId>
         </dependency>
-        <!-- Shared test utilities (FunctionInputCreator, FunctionCreator, CdmRuntimeModuleTesting) come from tests test-jar -->
+        <!-- Shared test scaffolding (CdmRuntimeModuleTesting, FunctionCreator, FunctionInputCreator,
+             Create*Input POJOs). Replaces the previous tests:test-jar dep, which had to be paired
+             with an exclusion on cdm-java to avoid the "Multiple PipelineModels" duplicate-resource
+             error under -P core-fpml (that whole leak path is now gone).
+             Transitively pulls cdm-samples on runtime classpath. -->
         <dependency>
             <groupId>org.finos.cdm</groupId>
-            <artifactId>tests</artifactId>
+            <artifactId>cdm-testing</artifactId>
             <version>${project.parent.version}</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>

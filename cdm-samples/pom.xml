@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cdm-parent</artifactId>
+        <groupId>org.finos.cdm</groupId>
+        <version>0.0.0.master-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cdm-samples</artifactId>
+    <name>cdm-samples</name>
+    <description>
+        Canonical CDM sample instances used as shared test/demo fixtures across the reactor.
+        Resource-only jar, no Java code. Depends on nothing — anyone can consume.
+        Was previously mixed into rosetta-source/src/main/resources under the misleading
+        `ingest/output/fpml-*` and `functions/fpml-5-10/*` paths; the segregation carve-out
+        makes ownership explicit.
+    </description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

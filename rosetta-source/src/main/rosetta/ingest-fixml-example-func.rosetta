@@ -1,9 +1,0 @@
-namespace cdm.ingest.fixml.example : <"Placeholder FIXML ingest surface: exists to demonstrate the split pattern on a namespace parallel to cdm.ingest.fpml.*. Contains a single trivial passthrough function so the FIXML profile and sibling module have something to build. Real FIXML mapping work would populate this namespace and file with actual FIXML→CDM mappings, mirroring how ingest-fpml-*.rosetta files are structured.">
-version "${project.version}"
-
-func ExampleFixmlPassthrough: <"Trivial passthrough that echoes its input. Placeholder only; replace with real FIXML→CDM mappings when the FIXML workstream lands.">
-    inputs:
-        input string (1..1)
-    output:
-        result string (1..1)
-    set result: input

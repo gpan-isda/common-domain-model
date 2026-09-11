@@ -27,7 +27,14 @@
             <groupId>org.finos.cdm</groupId>
             <artifactId>${cdm.artifactId}</artifactId>
         </dependency>
-        <!-- Consume AbstractExampleTest + CdmDemoTestsModule from examples test-jar -->
+        <!-- DemoCdmRuntimeModule lives in examples main-jar; CdmDemoTestsModule (used by
+             AbstractExampleTest) extends it. cdm-java exclusion no longer needed — the
+             duplicate-pipeline-JSON leak is gone now that cdm-samples owns those resources. -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>examples</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.finos.cdm</groupId>
             <artifactId>examples</artifactId>

@@ -42,6 +42,15 @@
             <groupId>org.finos.cdm</groupId>
             <artifactId>cdm-java</artifactId>
         </dependency>
+        <!-- Test scaffolding (CdmRuntimeModuleTesting + FunctionCreator + FunctionInputCreator
+             + Create*Input POJOs) migrated out of this module's src/test/java/. Transitively
+             brings cdm-samples on runtime classpath, which the fixtures read via ClassLoader. -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>cdm-testing</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.finos.rune-testing</groupId>
             <artifactId>rune-testing</artifactId>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cdm-parent</artifactId>
+        <groupId>org.finos.cdm</groupId>
+        <version>0.0.0.master-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cdm-testing</artifactId>
+    <name>cdm-testing</name>
+    <description>
+        Shared test scaffolding for CDM: CdmRuntimeModuleTesting (Guice wiring),
+        FunctionCreator / FunctionInputCreator (function execution + fixtures),
+        Create*Input POJOs. Consumed by tests, tests-fpml, and (potentially) downstream
+        integrators who want to reuse the same test rig without pulling tests:test-jar
+        (which used to be the back-door path for cdm-java transitives — see the fpml
+        segregation history).
+
+        Was originally under tests/src/test/java/org/finos/cdm/**; carved into a proper
+        sibling module so:
+          - tests-fpml no longer needs tests:test-jar (Fix 3's cdm-java exclusion becomes
+            unnecessary).
+          - The sample-data-reading fixtures cluster with the sample-data jar (cdm-samples)
+            they consume, making the coupling visible in the dep graph.
+    </description>
+
+    <dependencies>
+        <!-- CDM model types (referenced throughout FunctionInputCreator, etc.) -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>cdm-java</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <!-- Sample data on runtime classpath: FunctionInputCreator hardcodes paths under
+             ingest/output/**, which live in cdm-samples now. Runtime scope (not test) —
+             consumers of cdm-testing hit those paths from their own main or test code. -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>cdm-samples</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.finos.rune-common</groupId>
+            <artifactId>rune-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.finos.rune-testing</groupId>
+            <artifactId>rune-testing</artifactId>
+            <!-- Override the parent's dependencyManagement scope=test.
+                 cdm-testing IS test scaffolding, so we consume rune-testing at compile scope. -->
+            <scope>compile</scope>
+        </dependency>
+        <!-- FunctionCreator returns junit-jupiter Arguments; JUnit is compile-scope here. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

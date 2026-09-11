@@ -67,7 +67,9 @@
     </developers>
 
     <modules>
+        <module>cdm-samples</module>
         <module>rosetta-source</module>
+        <module>cdm-testing</module>
     </modules>
 
     <properties>
@@ -204,20 +206,11 @@
             </modules>
         </profile>
 
-        <!-- FpML-bearing profiles: include FpML tests/examples AND redirect their
-             cdm-java dep to the matching reactor artifactId. -->
-        <profile>
-            <id>fpml</id>
-            <properties>
-                <cdm.artifactId>cdm-java-fpml</cdm.artifactId>
-            </properties>
-            <modules>
-                <module>tests</module>
-                <module>examples</module>
-                <module>tests-fpml</module>
-                <module>examples-fpml</module>
-            </modules>
-        </profile>
+        <!-- FpML-bearing full build. Was two profiles historically (-P fpml for a mappings-only
+             composite, -P core-fpml for the standalone full jar). The mappings-only composite
+             turned out to be a source of hidden coupling (see cdm-partitioning history) — under
+             it, the fpml mapper compiled against pinned-core class shapes and rune-DSL classpath
+             scan drift produced non-deterministic output. -P core-fpml is the surviving path. -->
         <profile>
             <id>core-fpml</id>
             <properties>
@@ -231,24 +224,10 @@
             </modules>
         </profile>
 
-        <!-- FpML-free profiles: tests+examples still included (they don't reference FpML),
+        <!-- FpML-free profile: tests+examples included (they don't reference FpML),
              but tests-fpml/examples-fpml excluded because no FpML artifact is produced. -->
         <profile>
             <id>core</id>
-            <modules>
-                <module>tests</module>
-                <module>examples</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>fixml</id>
-            <modules>
-                <module>tests</module>
-                <module>examples</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>core-fixml</id>
             <modules>
                 <module>tests</module>
                 <module>examples</module>

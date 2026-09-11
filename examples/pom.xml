@@ -27,6 +27,15 @@
             <groupId>org.finos.cdm</groupId>
             <artifactId>cdm-java</artifactId>
         </dependency>
+        <!-- Sample CDM instances (moved out of cdm-java's resources). Runtime scope because
+             ValidateAndQualifySample (main-src) loads them via ClassLoader.getResource and needs
+             them on the shipped/executed classpath; the same jar covers the test suite. -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>cdm-samples</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>org.finos.rune-common</groupId>
             <artifactId>rune-common</artifactId>

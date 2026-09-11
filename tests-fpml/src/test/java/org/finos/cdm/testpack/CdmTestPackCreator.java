@@ -19,7 +19,6 @@ import com.regnosys.testing.pipeline.PipelineTreeConfig;
 import jakarta.inject.Inject;
 import org.finos.cdm.CdmRuntimeModuleTesting;
 import org.finos.cdm.functions.FunctionInputCreator;
-import org.finos.cdm.functions.SecLendingFunctionInputCreationTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +67,11 @@ public class CdmTestPackCreator {
         FunctionInputCreator functionInputCreator = new FunctionInputCreator();
         functionInputCreator.run(TestingExpectationUtil.TEST_WRITE_BASE_PATH);
 
-        SecLendingFunctionInputCreationTest SecLendingFunctionInputCreationTest = new SecLendingFunctionInputCreationTest();
-        SecLendingFunctionInputCreationTest.run();
+        // Sec-lending fixtures were previously regenerated here by calling
+        // SecLendingFunctionInputCreationTest.run() reflectively across the core-tests boundary.
+        // That was a cross-domain leak: sec-lending is core-side, and its fixture generation
+        // shouldn't be driven from the fpml-side runner. Sec-lending fixtures now regenerate
+        // themselves when the tests module test suite runs with WRITE_EXPECTATIONS=true.
 
         LOGGER.info(" ** Updating Function Output Samples");
 

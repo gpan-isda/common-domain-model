@@ -303,7 +303,6 @@
                                             </includes>
                                             <excludes>
                                                 <exclude>ingest-fpml-*.rosetta</exclude>
-                                                <exclude>ingest-fixml-*.rosetta</exclude>
                                             </excludes>
                                             <filtering>true</filtering>
                                         </resource>
@@ -432,249 +431,6 @@
         </profile>
         <profile>
             <!--
-              FpML mappings-only build. Produces a cdm-java-fpml jar
-              containing only the FpML ingest surface (compiled
-              src/ingest-fpml/java + rune-generated FpML types +
-              metafields wrappers). Core Rosetta types resolve from a
-              pre-installed cdm-java jar on the classpath.
-
-              Requires a prior `mvn -pl rosetta-source install -P core`
-              so that org.finos.cdm:cdm-java is resolvable from ~/.m2.
-
-              In-module analogue of the sibling rosetta-source-fpml/
-              module. Uses ${cdm.artifactId} indirection so the
-              profile's cdm-java dependency doesn't create a
-              module-depends-on-itself cycle.
-
-              Usage:
-                mvn -pl rosetta-source install -P core -DskipTests
-                mvn -pl rosetta-source install -P fpml -DskipTests
-            -->
-            <id>fpml</id>
-            <properties>
-                <cdm.artifactId>cdm-java-fpml</cdm.artifactId>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.finos.cdm</groupId>
-                    <artifactId>cdm-java</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
-                                    <resources combine.self="override">
-                                        <resource>
-                                            <directory>${project.build.directory}/parent-dependency/fpml/rosetta</directory>
-                                            <includes>
-                                                <include>*.rosetta</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                        <resource>
-                                            <directory>src/main/rosetta</directory>
-                                            <includes>
-                                                <include>ingest-fpml-*.rosetta</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.finos.rune</groupId>
-                        <artifactId>rune-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <configuration>
-                                    <!-- Widen classpath scan to also pick up core Rosetta types from the pinned cdm-java jar. -->
-                                    <classPathLookupFilter>.*org[\\/]finos[\\/]rune[\\/]rune-runtime.*\.jar|.*org[\\/]finos[\\/]cdm[\\/]cdm-java.*\.jar</classPathLookupFilter>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>Check code snippets vs cdm model</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>transform-codelist-xml-to-json</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <!--
-                              Package only the FpML surface, plus the
-                              regenerated metafields wrappers (see
-                              #4855 finding on rune-DSL metafield
-                              duplication). Compilation runs against
-                              src/main/java too but those classes are
-                              filtered out at packaging.
-                            -->
-                            <includes>
-                                <include>cdm/ingest/fpml/**</include>
-                                <include>cdm/metafields/**</include>
-                                <include>META-INF/**</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--
-              FIXML mappings-only build. Parallel of -P fpml for the
-              FIXML surface (currently a 5-line placeholder in
-              ingest-fixml-example-func.rosetta). In-module analogue of
-              rosetta-source-fixml/. When real FIXML mappings are
-              contributed, they flow through this profile unchanged.
-
-              Requires a prior `mvn -pl rosetta-source install -P core`
-              so cdm-java is resolvable from ~/.m2.
-
-              Usage:
-                mvn -pl rosetta-source install -P core -DskipTests
-                mvn -pl rosetta-source install -P fixml -DskipTests
-            -->
-            <id>fixml</id>
-            <properties>
-                <cdm.artifactId>cdm-java-fixml</cdm.artifactId>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.finos.cdm</groupId>
-                    <artifactId>cdm-java</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <!-- FIXML doesn't need the FpML upstream unpack. -->
-                                <id>copy-rune-fpml-rosetta</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <!-- Don't compile src/ingest-fpml/java in a FIXML build. -->
-                                <id>add-ingest-fpml-source</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
-                                    <resources combine.self="override">
-                                        <resource>
-                                            <directory>src/main/rosetta</directory>
-                                            <includes>
-                                                <include>ingest-fixml-*.rosetta</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.finos.rune</groupId>
-                        <artifactId>rune-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <configuration>
-                                    <classPathLookupFilter>.*org[\\/]finos[\\/]rune[\\/]rune-runtime.*\.jar|.*org[\\/]finos[\\/]cdm[\\/]cdm-java.*\.jar</classPathLookupFilter>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>Check code snippets vs cdm model</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>transform-codelist-xml-to-json</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <includes>
-                                <include>cdm/ingest/fixml/**</include>
-                                <include>cdm/metafields/**</include>
-                                <include>META-INF/**</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--
               Core + FpML combined build. Same content as the default
               build but excludes the FIXML placeholder mapping. Rebuilds
               core from source (no cdm-java dependency needed). Produces
@@ -719,82 +475,10 @@
                                             <includes>
                                                 <include>*.rosetta</include>
                                             </includes>
-                                            <excludes>
-                                                <exclude>ingest-fixml-*.rosetta</exclude>
-                                            </excludes>
                                             <filtering>true</filtering>
                                         </resource>
                                     </resources>
                                 </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--
-              Core + FIXML combined build. Rebuilds core from source
-              and adds the FIXML placeholder surface (currently
-              ingest-fixml-example-func.rosetta). Excludes FpML upstream and
-              FpML mappings. Produces a cdm-java-core-fixml jar.
-
-              Equivalent to what the proposal called `-P core,fixml`.
-
-              Usage:
-                mvn -pl rosetta-source clean install -P core-fixml -DskipTests
-            -->
-            <id>core-fixml</id>
-            <properties>
-                <cdm.artifactId>cdm-java-core-fixml</cdm.artifactId>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-rune-fpml-rosetta</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/target/classes/cdm/rosetta</outputDirectory>
-                                    <resources combine.self="override">
-                                        <resource>
-                                            <directory>src/main/rosetta</directory>
-                                            <includes>
-                                                <include>*.rosetta</include>
-                                            </includes>
-                                            <excludes>
-                                                <exclude>ingest-fpml-*.rosetta</exclude>
-                                            </excludes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>add-ingest-fpml-source</id>
-                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -1130,6 +814,15 @@
         <dependency>
             <groupId>org.finos.rune-testing</groupId>
             <artifactId>rune-testing</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Sample CDM instances (were formerly in this module's src/main/resources under
+             ingest/output/ and functions/fpml-5-10/). Test-scope only — rosetta-source's own
+             tests reference these paths; the main jar no longer ships them. -->
+        <dependency>
+            <groupId>org.finos.cdm</groupId>
+            <artifactId>cdm-samples</artifactId>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
