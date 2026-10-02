@@ -116,6 +116,8 @@ func MapCreditDefaultSwapOptionPayout:
                             ...
                         },
                     principalPayment: empty, // MapPrincipalPayments(fpmlTrade, fpmlPartiesAndAccountsModel),
+                    applicability: empty,
+                    leverage: empty,
                     settlementTerms:
                         SettlementTerms {
                             settlementType: fpmlCreditDefaultSwapOption -> settlementType to-enum SettlementTypeEnum,

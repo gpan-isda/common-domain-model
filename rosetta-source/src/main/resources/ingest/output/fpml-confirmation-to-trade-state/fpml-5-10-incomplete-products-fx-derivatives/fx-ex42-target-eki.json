@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "4ea7351a",
+  "@key" : "f9ee7a76",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -62,6 +62,56 @@
                   "@data" : "2017-12-20"
                 } ]
               }
+            }
+          },
+          "applicability" : [ {
+            "upperBound" : {
+              "triggerType" : "EqualOrLess",
+              "level" : {
+                "@ref:scoped" : "price-1"
+              }
+            }
+          }, {
+            "lowerBound" : {
+              "triggerType" : "EqualOrGreater",
+              "level" : {
+                "value" : 1.3900,
+                "unit" : {
+                  "currency" : {
+                    "@data" : "USD"
+                  }
+                },
+                "perUnitOf" : {
+                  "currency" : {
+                    "@data" : "EUR"
+                  }
+                },
+                "priceType" : "ExchangeRate"
+              }
+            }
+          } ],
+          "leverage" : {
+            "fixingCondition" : {
+              "lowerBound" : {
+                "triggerType" : "EqualOrGreater",
+                "level" : {
+                  "value" : 1.3900,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "USD"
+                    }
+                  },
+                  "perUnitOf" : {
+                    "currency" : {
+                      "@data" : "EUR"
+                    }
+                  },
+                  "priceType" : "ExchangeRate"
+                }
+              }
+            },
+            "ratio" : {
+              "value" : 2
             }
           },
           "underlier" : {
@@ -126,7 +176,11 @@
                     "@ref:scoped" : "price-1"
                   }
                 }
-              } ]
+              } ],
+              "targetCount" : {
+                "conditionalFixings" : 5,
+                "settlementAtKnockout" : true
+              }
             } ]
           }
         },

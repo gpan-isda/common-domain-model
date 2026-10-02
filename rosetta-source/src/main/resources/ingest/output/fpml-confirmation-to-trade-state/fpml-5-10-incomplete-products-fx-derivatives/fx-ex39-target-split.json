@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "76811ce9",
+  "@key" : "ac14bc85",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -46,6 +46,19 @@
                   "@data" : "2015-03-27"
                 } ]
               }
+            }
+          },
+          "leverage" : {
+            "fixingCondition" : {
+              "upperBound" : {
+                "triggerType" : "Less",
+                "level" : {
+                  "@ref:scoped" : "price-1"
+                }
+              }
+            },
+            "ratio" : {
+              "value" : 2
             }
           },
           "underlier" : {
@@ -105,7 +118,11 @@
                     "priceType" : "ExchangeRate"
                   }
                 }
-              } ]
+              } ],
+              "targetCount" : {
+                "conditionalFixings" : 4,
+                "settlementAtKnockout" : true
+              }
             } ]
           }
         },

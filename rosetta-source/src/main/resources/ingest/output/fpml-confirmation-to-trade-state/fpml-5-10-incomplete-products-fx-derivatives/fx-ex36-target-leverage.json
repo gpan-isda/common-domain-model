@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "51b2e6fe",
+  "@key" : "419a395c",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -68,6 +68,29 @@
                   "@data" : "2015-06-05"
                 } ]
               }
+            }
+          },
+          "leverage" : {
+            "fixingCondition" : {
+              "upperBound" : {
+                "triggerType" : "Less",
+                "level" : {
+                  "@ref:scoped" : "price-1"
+                }
+              }
+            },
+            "ratio" : {
+              "value" : 2.5,
+              "datedValue" : [ {
+                "date" : "2015-01-02",
+                "value" : 1.5
+              }, {
+                "date" : "2015-03-12",
+                "value" : 1.0
+              }, {
+                "date" : "2015-05-07",
+                "value" : 0.5
+              } ]
             }
           },
           "underlier" : {
@@ -164,6 +187,23 @@
         "price" : [ {
           "@key:scoped" : "price-1",
           "value" : 1.0100,
+          "datedValue" : [ {
+            "date" : "2014-12-04",
+            "value" : 1.0200,
+            "@type" : "cdm.base.math.NonNegativeDatedValue"
+          }, {
+            "date" : "2015-01-02",
+            "value" : 1.0400,
+            "@type" : "cdm.base.math.NonNegativeDatedValue"
+          }, {
+            "date" : "2015-03-12",
+            "value" : 1.0900,
+            "@type" : "cdm.base.math.NonNegativeDatedValue"
+          }, {
+            "date" : "2015-05-07",
+            "value" : 1.1400,
+            "@type" : "cdm.base.math.NonNegativeDatedValue"
+          } ],
           "unit" : {
             "currency" : {
               "@data" : "CAD"

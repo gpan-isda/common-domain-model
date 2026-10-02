@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "4be674a4",
+  "@key" : "1b23e910",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -86,6 +86,56 @@
                   "@data" : "2016-02-02"
                 } ]
               }
+            }
+          },
+          "applicability" : [ {
+            "upperBound" : {
+              "triggerType" : "EqualOrLess",
+              "level" : {
+                "@ref:scoped" : "price-1"
+              }
+            }
+          }, {
+            "lowerBound" : {
+              "triggerType" : "Greater",
+              "level" : {
+                "value" : 6.24,
+                "unit" : {
+                  "currency" : {
+                    "@data" : "CNY"
+                  }
+                },
+                "perUnitOf" : {
+                  "currency" : {
+                    "@data" : "USD"
+                  }
+                },
+                "priceType" : "ExchangeRate"
+              }
+            }
+          } ],
+          "leverage" : {
+            "fixingCondition" : {
+              "lowerBound" : {
+                "triggerType" : "Greater",
+                "level" : {
+                  "value" : 6.24,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "CNY"
+                    }
+                  },
+                  "perUnitOf" : {
+                    "currency" : {
+                      "@data" : "USD"
+                    }
+                  },
+                  "priceType" : "ExchangeRate"
+                }
+              }
+            },
+            "ratio" : {
+              "value" : 2
             }
           },
           "underlier" : {
@@ -218,7 +268,10 @@
                 "triggerType" : "EqualOrLess",
                 "triggerTimeType" : "Closing"
               }
-            } ]
+            } ],
+            "outstandingGainRebate" : {
+              "settlementAdjustmentStyle" : "VariedStrike"
+            }
           }
         },
         "calculationAgent" : {

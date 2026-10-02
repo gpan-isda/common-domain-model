@@ -8,6 +8,7 @@ import cdm.base.staticdata.asset.common.*
 import cdm.base.staticdata.asset.credit.*
 import cdm.base.staticdata.party.*
 import cdm.observable.asset.*
+import cdm.observable.event.*
 import cdm.product.asset.*
 import cdm.product.common.schedule.*
 
@@ -62,6 +63,25 @@ type ResolvablePriceQuantity: <"Generic class to specify the quantity for differ
         if quantityMultiplier exists
         then quantityReference -> reference exists
 
+type FixingCondition: <"Defines a region of the observed fixing, bounded by a lower bound, an upper bound or both.">
+
+    lowerBound FixingBound (0..1) <"The lower bound of the region.">
+    upperBound FixingBound (0..1) <"The upper bound of the region.">
+
+    condition BoundExists: <"At least one bound must be specified.">
+        lowerBound exists or upperBound exists
+
+type FixingBound: <"Defines a bound of a fixing region as a comparison of the observed fixing with a level.">
+
+    triggerType TriggerTypeEnum (1..1) <"The comparison of the observed fixing with the level, e.g. EqualOrGreater means that the fixing must be at or above the level.">
+    level PriceSchedule (1..1) <"The level of the bound, either specified directly or by reference to a price of the trade, e.g. the strike.">
+        [metadata address "pointsTo"=PriceQuantity->price]
+
+type ConditionalLeverage: <"Defines a leverage applied to the quantity of a payout when the observed fixing is in a specified region, e.g. the leverage of a Target Redemption Forward or the gearing of an accumulator.">
+
+    fixingCondition FixingCondition (1..1) <"The fixing region in which the leverage applies.">
+    ratio NonNegativeSchedule (1..1) <"The ratio applied to the quantity of the payout, which may step over time.">
+
 type PayoutBase: <"A data type that contains the common attributes (e.g. payer and receiver parties) and validation conditions that apply across all payout types">
     [metadata key]
 
@@ -69,6 +89,8 @@ type PayoutBase: <"A data type that contains the common attributes (e.g. payer a
     priceQuantity ResolvablePriceQuantity (0..1) <"Each payout leg must implement the quantity concept as a 'resolvable' type, which allows for different payout legs to be linked to each other (e.g. in the case of cross-curreny products).">
     principalPayment PrincipalPayments (0..1) <"The specification of the principal exchange. Optional as only applicable in the case of cross-currency or zero-coupon swaps with a final payment.">
     settlementTerms SettlementTerms (0..1) <"Each payout leg must specifies its settlement terms, including the delivery type (i.e. cash vs physical, and their respective terms), the transfer type (DvP etc.) and settlement date, if any.">
+    applicability FixingCondition (0..*) <"The fixing region(s) in which the payout applies, for payouts which are conditional on an observed fixing, e.g. a payoff region of a Target Redemption Forward. When several regions are specified, the payout applies when the fixing is in any of them. When absent, the payout applies at every fixing.">
+    leverage ConditionalLeverage (0..1) <"A leverage applied to the quantity of the payout when the observed fixing is in a specified region.">
 
     condition FinalPrincipalAmountExists: <"When a final principal payment is specified, and as long as the quantity is not resettable, the amount of that principal payment (or its present value) must be provided. This condition is implemented at the Payout level and not on PrincipalPayment, because it needs to check whether the quantity may be resettable.">
         if principalPayment -> principalPaymentSchedule -> finalPrincipalPayment exists

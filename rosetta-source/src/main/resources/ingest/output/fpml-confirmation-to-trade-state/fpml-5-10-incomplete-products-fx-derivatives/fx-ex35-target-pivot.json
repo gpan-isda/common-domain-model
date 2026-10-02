@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "da6169ab",
+  "@key" : "2d6b00cd",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -64,6 +64,38 @@
               }
             }
           },
+          "applicability" : [ {
+            "lowerBound" : {
+              "triggerType" : "Greater",
+              "level" : {
+                "value" : 1.3150,
+                "unit" : {
+                  "currency" : {
+                    "@data" : "USD"
+                  }
+                },
+                "perUnitOf" : {
+                  "currency" : {
+                    "@data" : "EUR"
+                  }
+                },
+                "priceType" : "ExchangeRate"
+              }
+            }
+          } ],
+          "leverage" : {
+            "fixingCondition" : {
+              "lowerBound" : {
+                "triggerType" : "Greater",
+                "level" : {
+                  "@ref:scoped" : "price-1"
+                }
+              }
+            },
+            "ratio" : {
+              "value" : 2
+            }
+          },
           "underlier" : {
             "@type" : "cdm.observable.asset.Observable",
             "@ref:scoped" : "observable-1"
@@ -123,7 +155,7 @@
                 "lowerBound" : {
                   "triggerType" : "EqualOrGreater",
                   "level" : {
-                    "@ref:scoped" : "price-1"
+                    "@ref:scoped" : "price-2"
                   }
                 }
               }, {

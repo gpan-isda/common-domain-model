@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "72e5895b",
+  "@key" : "668c66e6",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -46,6 +46,19 @@
                   "@data" : "2015-03-27"
                 } ]
               }
+            }
+          },
+          "leverage" : {
+            "fixingCondition" : {
+              "upperBound" : {
+                "triggerType" : "Less",
+                "level" : {
+                  "@ref:scoped" : "price-1"
+                }
+              }
+            },
+            "ratio" : {
+              "value" : 2
             }
           },
           "underlier" : {
