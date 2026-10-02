@@ -201,6 +201,171 @@
       "runtimeError" : false
     }
   }, {
+    "id" : "fx-ex33-target",
+    "name" : "fx ex33 target",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex33-target.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex33-target.json",
+    "assertions" : {
+      "inputPathCount" : 125,
+      "outputPathCount" : 134,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex34-target-digital",
+    "name" : "fx ex34 target digital",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex34-target-digital.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex34-target-digital.json",
+    "assertions" : {
+      "inputPathCount" : 69,
+      "outputPathCount" : 59,
+      "modelValidationFailures" : 2,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex35-target-pivot",
+    "name" : "fx ex35 target pivot",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex35-target-pivot.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex35-target-pivot.json",
+    "assertions" : {
+      "inputPathCount" : 89,
+      "outputPathCount" : 85,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex35-target-pivot-settlement-period-schedule",
+    "name" : "fx ex35 target pivot settlement period schedule",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex35-target-pivot-settlement-period-schedule.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex35-target-pivot-settlement-period-schedule.json",
+    "assertions" : {
+      "inputPathCount" : 185,
+      "outputPathCount" : 85,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex36-target-leverage",
+    "name" : "fx ex36 target leverage",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex36-target-leverage.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex36-target-leverage.json",
+    "assertions" : {
+      "inputPathCount" : 103,
+      "outputPathCount" : 81,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex37-target-knockout",
+    "name" : "fx ex37 target knockout",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex37-target-knockout.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex37-target-knockout.json",
+    "assertions" : {
+      "inputPathCount" : 69,
+      "outputPathCount" : 68,
+      "modelValidationFailures" : 5,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex38-target-rebate",
+    "name" : "fx ex38 target rebate",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex38-target-rebate.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex38-target-rebate.json",
+    "assertions" : {
+      "inputPathCount" : 120,
+      "outputPathCount" : 106,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex39-target-split",
+    "name" : "fx ex39 target split",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex39-target-split.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex39-target-split.json",
+    "assertions" : {
+      "inputPathCount" : 57,
+      "outputPathCount" : 58,
+      "modelValidationFailures" : 2,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex40-target-accelerated",
+    "name" : "fx ex40 target accelerated",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex40-target-accelerated.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex40-target-accelerated.json",
+    "assertions" : {
+      "inputPathCount" : 65,
+      "outputPathCount" : 65,
+      "modelValidationFailures" : 2,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex41-target-bonus-collar",
+    "name" : "fx ex41 target bonus collar",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex41-target-bonus-collar.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex41-target-bonus-collar.json",
+    "assertions" : {
+      "inputPathCount" : 94,
+      "outputPathCount" : 72,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex41-target-bonus-collar-settlement-period-schedule",
+    "name" : "fx ex41 target bonus collar settlement period schedule",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex41-target-bonus-collar-settlement-period-schedule.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex41-target-bonus-collar-settlement-period-schedule.json",
+    "assertions" : {
+      "inputPathCount" : 150,
+      "outputPathCount" : 72,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex42-target-eki",
+    "name" : "fx ex42 target eki",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex42-target-eki.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex42-target-eki.json",
+    "assertions" : {
+      "inputPathCount" : 87,
+      "outputPathCount" : 71,
+      "modelValidationFailures" : 3,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex43-target-eki",
+    "name" : "fx ex43 target eki",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex43-target-eki.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex43-target-eki.json",
+    "assertions" : {
+      "inputPathCount" : 86,
+      "outputPathCount" : 72,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex43-target-eki-settlement-period-schedule",
+    "name" : "fx ex43 target eki settlement period schedule",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex43-target-eki-settlement-period-schedule.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex43-target-eki-settlement-period-schedule.json",
+    "assertions" : {
+      "inputPathCount" : 158,
+      "outputPathCount" : 72,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
+    "id" : "fx-ex43-target-eki-settlement-period-schedule-references",
+    "name" : "fx ex43 target eki settlement period schedule references",
+    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex43-target-eki-settlement-period-schedule-references.xml",
+    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex43-target-eki-settlement-period-schedule-references.json",
+    "assertions" : {
+      "inputPathCount" : 161,
+      "outputPathCount" : 72,
+      "modelValidationFailures" : 1,
+      "runtimeError" : false
+    }
+  }, {
     "id" : "td-ex01-simple-term-deposit",
     "name" : "td ex01 simple term deposit",
     "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/td-ex01-simple-term-deposit.xml",

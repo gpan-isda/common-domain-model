@@ -24,6 +24,7 @@ import fpml.consolidated.eq.shared.* as fpml
 import fpml.consolidated.eqd.* as fpml
 import fpml.consolidated.fpmlreturn.swaps.* as fpml
 import fpml.consolidated.fx.* as fpml
+import fpml.consolidated.fx.targets.* as fpml
 import fpml.consolidated.generic.* as fpml
 import fpml.consolidated.ird.* as fpml
 import fpml.consolidated.option.shared.* as fpml
@@ -46,6 +47,8 @@ func MapTransferStateList:
                 MapPaymentListToTransferStateList(additionalPayment, Upfront),
             fpml.FxVarianceSwap then
                 MapPaymentListToTransferStateList(additionalPayment, Upfront),
+            fpml.FxTargetKnockoutForward then
+                additionalPayment extract MapSimplePaymentToTransferState(item, Upfront),
             fpml.Swap then
                 MapPaymentListToTransferStateList(additionalPayment, Upfront),
             fpml.GenericProduct then

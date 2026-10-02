@@ -1,0 +1,319 @@
+{
+  "@model" : "cdm",
+  "@type" : "cdm.event.common.TradeState",
+  "@version" : "0.0.0.master-SNAPSHOT",
+  "@key" : "4be674a4",
+  "trade" : {
+    "product" : {
+      "taxonomy" : [ {
+        "source" : "ISDA",
+        "value" : {
+          "name" : {
+            "@data" : "ForeignExchange_ComplexExotic_TargetRedemptionForward"
+          }
+        },
+        "calculated" : true
+      } ],
+      "economicTerms" : {
+        "payout" : [ {
+          "@type" : "cdm.product.template.SettlementPayout",
+          "payerReceiver" : {
+            "payer" : "Party1",
+            "receiver" : "Party2"
+          },
+          "priceQuantity" : {
+            "quantitySchedule" : {
+              "@ref:scoped" : "quantity-1"
+            },
+            "priceSchedule" : [ {
+              "@ref:scoped" : "price-1"
+            } ]
+          },
+          "settlementTerms" : {
+            "settlementType" : "Physical",
+            "settlementDate" : {
+              "adjustableDates" : {
+                "dateAdjustments" : {
+                  "businessDayConvention" : "FOLLOWING"
+                },
+                "adjustedDate" : [ {
+                  "@data" : "2014-03-04"
+                }, {
+                  "@data" : "2014-04-02"
+                }, {
+                  "@data" : "2014-05-07"
+                }, {
+                  "@data" : "2014-06-04"
+                }, {
+                  "@data" : "2014-07-03"
+                }, {
+                  "@data" : "2014-08-04"
+                }, {
+                  "@data" : "2014-09-02"
+                }, {
+                  "@data" : "2014-10-09"
+                }, {
+                  "@data" : "2014-11-04"
+                }, {
+                  "@data" : "2014-12-02"
+                }, {
+                  "@data" : "2015-01-05"
+                }, {
+                  "@data" : "2015-02-03"
+                }, {
+                  "@data" : "2015-03-03"
+                }, {
+                  "@data" : "2015-04-02"
+                }, {
+                  "@data" : "2015-05-05"
+                }, {
+                  "@data" : "2015-06-02"
+                }, {
+                  "@data" : "2015-07-03"
+                }, {
+                  "@data" : "2015-08-04"
+                }, {
+                  "@data" : "2015-09-02"
+                }, {
+                  "@data" : "2015-10-09"
+                }, {
+                  "@data" : "2015-11-03"
+                }, {
+                  "@data" : "2015-12-02"
+                }, {
+                  "@data" : "2016-01-05"
+                }, {
+                  "@data" : "2016-02-02"
+                } ]
+              }
+            }
+          },
+          "underlier" : {
+            "@type" : "cdm.observable.asset.Observable",
+            "@ref:scoped" : "observable-1"
+          }
+        } ],
+        "terminationProvision" : {
+          "contingentTerminationProvision" : {
+            "observationTerms" : {
+              "observationTime" : {
+                "hourMinuteTime" : "15:00:00",
+                "businessCenter" : {
+                  "@data" : "JPTO"
+                }
+              },
+              "informationSource" : {
+                "primarySource" : {
+                  "sourceProvider" : {
+                    "@data" : "Bloomberg"
+                  },
+                  "sourcePage" : {
+                    "@data" : "BFIX"
+                  }
+                }
+              },
+              "observationDates" : {
+                "observationSchedule" : {
+                  "observationDate" : [ {
+                    "adjustedDate" : "2014-02-28"
+                  }, {
+                    "adjustedDate" : "2014-03-31"
+                  }, {
+                    "adjustedDate" : "2014-04-30"
+                  }, {
+                    "adjustedDate" : "2014-05-30"
+                  }, {
+                    "adjustedDate" : "2014-06-30"
+                  }, {
+                    "adjustedDate" : "2014-07-31"
+                  }, {
+                    "adjustedDate" : "2014-08-29"
+                  }, {
+                    "adjustedDate" : "2014-09-30"
+                  }, {
+                    "adjustedDate" : "2014-10-31"
+                  }, {
+                    "adjustedDate" : "2014-11-28"
+                  }, {
+                    "adjustedDate" : "2014-12-31"
+                  }, {
+                    "adjustedDate" : "2015-01-30"
+                  }, {
+                    "adjustedDate" : "2015-02-27"
+                  }, {
+                    "adjustedDate" : "2015-03-31"
+                  }, {
+                    "adjustedDate" : "2015-04-30"
+                  }, {
+                    "adjustedDate" : "2015-05-29"
+                  }, {
+                    "adjustedDate" : "2015-06-30"
+                  }, {
+                    "adjustedDate" : "2015-07-31"
+                  }, {
+                    "adjustedDate" : "2015-08-31"
+                  }, {
+                    "adjustedDate" : "2015-09-30"
+                  }, {
+                    "adjustedDate" : "2015-10-30"
+                  }, {
+                    "adjustedDate" : "2015-11-30"
+                  }, {
+                    "adjustedDate" : "2015-12-31"
+                  }, {
+                    "adjustedDate" : "2016-01-29"
+                  } ]
+                }
+              }
+            },
+            "target" : [ {
+              "accumulationCondition" : [ {
+                "upperBound" : {
+                  "triggerType" : "EqualOrLess",
+                  "level" : {
+                    "value" : 5.9800,
+                    "unit" : {
+                      "currency" : {
+                        "@data" : "CNY"
+                      }
+                    },
+                    "perUnitOf" : {
+                      "currency" : {
+                        "@data" : "USD"
+                      }
+                    },
+                    "priceType" : "ExchangeRate"
+                  }
+                }
+              } ],
+              "targetLevel" : {
+                "amount" : {
+                  "value" : 800000.00,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "CNY"
+                    }
+                  }
+                },
+                "targetStyle" : "Exact",
+                "settlementAdjustmentStyle" : "VariedStrike"
+              }
+            } ],
+            "knockOut" : [ {
+              "trigger" : {
+                "level" : [ {
+                  "value" : 5.98,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "CNY"
+                    }
+                  },
+                  "perUnitOf" : {
+                    "currency" : {
+                      "@data" : "USD"
+                    }
+                  },
+                  "priceType" : "ExchangeRate"
+                } ],
+                "triggerType" : "EqualOrLess",
+                "triggerTimeType" : "Closing"
+              }
+            } ]
+          }
+        },
+        "calculationAgent" : {
+          "calculationAgentParty" : "CalculationAgentIndependent"
+        }
+      }
+    },
+    "tradeLot" : [ {
+      "priceQuantity" : [ {
+        "price" : [ {
+          "@key:scoped" : "price-1",
+          "value" : 6.1400,
+          "unit" : {
+            "currency" : {
+              "@data" : "CNY"
+            }
+          },
+          "perUnitOf" : {
+            "currency" : {
+              "@data" : "USD"
+            }
+          },
+          "priceType" : "ExchangeRate"
+        } ],
+        "quantity" : {
+          "@key:scoped" : "quantity-1",
+          "value" : 1000000,
+          "unit" : {
+            "currency" : {
+              "@data" : "USD"
+            }
+          }
+        },
+        "observable" : {
+          "@key:scoped" : "observable-1",
+          "@data" : {
+            "@type" : "cdm.base.staticdata.asset.common.Cash",
+            "identifier" : [ {
+              "identifier" : {
+                "@data" : "USD"
+              },
+              "identifierType" : "CurrencyCode"
+            } ],
+            "assetType" : "Cash"
+          }
+        }
+      } ]
+    } ],
+    "counterparty" : [ {
+      "role" : "Party1",
+      "partyReference" : {
+        "@ref:external" : "ptyB"
+      }
+    }, {
+      "role" : "Party2",
+      "partyReference" : {
+        "@ref:external" : "ptyA"
+      }
+    } ],
+    "ancillaryParty" : [ {
+      "role" : "CalculationAgentIndependent",
+      "partyReference" : [ {
+        "@ref:external" : "ptyA"
+      } ]
+    } ],
+    "tradeIdentifier" : [ {
+      "issuerReference" : {
+        "@ref:external" : "ptyA"
+      },
+      "assignedIdentifier" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.partyA.com/fx/trade-id",
+          "@data" : "12345"
+        }
+      } ]
+    } ],
+    "tradeDate" : {
+      "@data" : "2014-02-27"
+    },
+    "party" : [ {
+      "@key:external" : "ptyA",
+      "partyId" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+          "@data" : "Party A"
+        }
+      } ]
+    }, {
+      "@key:external" : "ptyB",
+      "partyId" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+          "@data" : "Party B"
+        }
+      } ]
+    } ]
+  }
+}

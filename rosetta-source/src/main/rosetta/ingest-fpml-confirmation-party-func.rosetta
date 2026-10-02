@@ -26,6 +26,7 @@ import cdm.ingest.fpml.confirmation.product.fxdigitaloption.*
 import cdm.ingest.fpml.confirmation.product.fxoption.*
 import cdm.ingest.fpml.confirmation.product.fxsingleleg.*
 import cdm.ingest.fpml.confirmation.product.fxswap.*
+import cdm.ingest.fpml.confirmation.product.fxtargetknockoutforward.*
 import cdm.ingest.fpml.confirmation.product.fxvarianceswap.*
 import cdm.ingest.fpml.confirmation.product.fxvolatilityswap.*
 import cdm.ingest.fpml.confirmation.product.genericproduct.*
@@ -51,6 +52,7 @@ import fpml.consolidated.eq.shared.* as fpml
 import fpml.consolidated.eqd.* as fpml
 import fpml.consolidated.fpmlreturn.swaps.* as fpml
 import fpml.consolidated.fx.* as fpml
+import fpml.consolidated.fx.targets.* as fpml
 import fpml.consolidated.generic.* as fpml
 import fpml.consolidated.ird.* as fpml
 import fpml.consolidated.shared.* as fpml
@@ -86,6 +88,7 @@ func MapCounterpartyList:
             fpml.FxDigitalOption then MapFxDigitalOptionCounterpartyList,
             fpml.FxSingleLeg then MapFxSingleLegCounterpartyList,
             fpml.FxSwap then MapFxSwapCounterpartyList,
+            fpml.FxTargetKnockoutForward then MapFxTargetKnockoutForwardCounterpartyList,
             fpml.FxVarianceSwap then MapFxVarianceSwapCounterpartyList,
             fpml.FxVolatilitySwap then MapFxVolatilitySwapCounterpartyList,
             fpml.GenericProduct then MapGenericProductCounterpartyList,

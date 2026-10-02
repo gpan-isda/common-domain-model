@@ -33,6 +33,7 @@ import cdm.ingest.fpml.confirmation.product.fxdigitaloption.*
 import cdm.ingest.fpml.confirmation.product.fxoption.*
 import cdm.ingest.fpml.confirmation.product.fxsingleleg.*
 import cdm.ingest.fpml.confirmation.product.fxswap.*
+import cdm.ingest.fpml.confirmation.product.fxtargetknockoutforward.*
 import cdm.ingest.fpml.confirmation.product.fxvarianceswap.*
 import cdm.ingest.fpml.confirmation.product.fxvolatilityswap.*
 import cdm.ingest.fpml.confirmation.product.genericproduct.*
@@ -59,6 +60,7 @@ import fpml.consolidated.eq.shared.* as fpml
 import fpml.consolidated.eqd.* as fpml
 import fpml.consolidated.fpmlreturn.swaps.* as fpml
 import fpml.consolidated.fx.* as fpml
+import fpml.consolidated.fx.targets.* as fpml
 import fpml.consolidated.generic.* as fpml
 import fpml.consolidated.ird.* as fpml
 import fpml.consolidated.shared.* as fpml
@@ -316,6 +318,8 @@ func MapNonTransferableProduct:
                 MapFxSingleLegNonTransferableProduct(item, cdmCounterpartyList),
             fpml.FxSwap then
                 MapFxSwapNonTransferableProduct(item, cdmCounterpartyList),
+            fpml.FxTargetKnockoutForward then
+                MapFxTargetKnockoutForwardNonTransferableProduct(item, cdmCounterpartyList),
             fpml.FxVarianceSwap then
                 MapFxVarianceSwapNonTransferableProduct(item, cdmCounterpartyList),
             fpml.FxVolatilitySwap then
@@ -435,6 +439,7 @@ func MapPriceQuantityList:
             fpml.FxOption then MapFxOptionPriceQuantityList,
             fpml.FxSingleLeg then MapFxSingleLegPriceQuantityList,
             fpml.FxSwap then MapFxSwapPriceQuantityList,
+            fpml.FxTargetKnockoutForward then MapFxTargetKnockoutForwardPriceQuantityList,
             fpml.FxVarianceSwap then MapFxVarianceSwapPriceQuantityList,
             fpml.FxVolatilitySwap then MapFxVolatilitySwapPriceQuantityList,
             fpml.GenericProduct then

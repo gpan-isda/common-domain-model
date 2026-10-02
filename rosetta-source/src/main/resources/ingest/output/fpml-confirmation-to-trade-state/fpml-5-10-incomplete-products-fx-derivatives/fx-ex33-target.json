@@ -1,0 +1,385 @@
+{
+  "@model" : "cdm",
+  "@type" : "cdm.event.common.TradeState",
+  "@version" : "0.0.0.master-SNAPSHOT",
+  "@key" : "458196b4",
+  "trade" : {
+    "product" : {
+      "taxonomy" : [ {
+        "source" : "Other",
+        "value" : {
+          "name" : {
+            "@scheme" : "http://www.fpml.org/coding-scheme/product-type-simple",
+            "@data" : "FxTarget"
+          }
+        }
+      }, {
+        "source" : "ISDA",
+        "value" : {
+          "name" : {
+            "@data" : "ForeignExchange_ComplexExotic_TargetRedemptionForward"
+          }
+        },
+        "calculated" : true
+      } ],
+      "economicTerms" : {
+        "payout" : [ {
+          "@type" : "cdm.product.template.SettlementPayout",
+          "payerReceiver" : {
+            "payer" : "Party1",
+            "receiver" : "Party2"
+          },
+          "priceQuantity" : {
+            "quantitySchedule" : {
+              "@ref:scoped" : "quantity-1"
+            },
+            "priceSchedule" : [ {
+              "@ref:scoped" : "price-1"
+            } ]
+          },
+          "settlementTerms" : {
+            "settlementType" : "Physical",
+            "settlementDate" : {
+              "adjustableDates" : {
+                "adjustedDate" : [ {
+                  "@data" : "2011-09-30"
+                }, {
+                  "@data" : "2011-10-03"
+                }, {
+                  "@data" : "2011-10-04"
+                }, {
+                  "@data" : "2011-10-05"
+                }, {
+                  "@data" : "2011-10-06"
+                }, {
+                  "@data" : "2011-10-07"
+                }, {
+                  "@data" : "2011-10-11"
+                }, {
+                  "@data" : "2011-10-12"
+                }, {
+                  "@data" : "2011-10-13"
+                }, {
+                  "@data" : "2011-10-14"
+                }, {
+                  "@data" : "2011-10-17"
+                }, {
+                  "@data" : "2011-10-18"
+                }, {
+                  "@data" : "2011-10-19"
+                }, {
+                  "@data" : "2011-10-20"
+                }, {
+                  "@data" : "2011-10-21"
+                }, {
+                  "@data" : "2011-10-24"
+                }, {
+                  "@data" : "2011-10-25"
+                }, {
+                  "@data" : "2011-10-26"
+                }, {
+                  "@data" : "2011-10-27"
+                }, {
+                  "@data" : "2011-10-28"
+                }, {
+                  "@data" : "2011-10-31"
+                }, {
+                  "@data" : "2011-11-01"
+                }, {
+                  "@data" : "2011-11-02"
+                }, {
+                  "@data" : "2011-11-04"
+                }, {
+                  "@data" : "2011-11-07"
+                }, {
+                  "@data" : "2011-11-08"
+                }, {
+                  "@data" : "2011-11-09"
+                }, {
+                  "@data" : "2011-11-10"
+                }, {
+                  "@data" : "2011-11-14"
+                }, {
+                  "@data" : "2011-11-15"
+                }, {
+                  "@data" : "2011-11-16"
+                }, {
+                  "@data" : "2011-11-17"
+                }, {
+                  "@data" : "2011-11-18"
+                }, {
+                  "@data" : "2011-11-21"
+                }, {
+                  "@data" : "2011-11-22"
+                } ]
+              }
+            }
+          },
+          "underlier" : {
+            "@type" : "cdm.observable.asset.Observable",
+            "@ref:scoped" : "observable-1"
+          }
+        } ],
+        "terminationProvision" : {
+          "contingentTerminationProvision" : {
+            "observationTerms" : {
+              "observationTime" : {
+                "hourMinuteTime" : "14:15:00",
+                "businessCenter" : {
+                  "@data" : "EUTA"
+                }
+              },
+              "informationSource" : {
+                "primarySource" : {
+                  "sourceProvider" : {
+                    "@data" : "Reuters"
+                  },
+                  "sourcePage" : {
+                    "@data" : "ECB37"
+                  }
+                }
+              },
+              "observationDates" : {
+                "observationSchedule" : {
+                  "observationDate" : [ {
+                    "adjustedDate" : "2011-09-28"
+                  }, {
+                    "adjustedDate" : "2011-09-29"
+                  }, {
+                    "adjustedDate" : "2011-09-30"
+                  }, {
+                    "adjustedDate" : "2011-10-03"
+                  }, {
+                    "adjustedDate" : "2011-10-04"
+                  }, {
+                    "adjustedDate" : "2011-10-05"
+                  }, {
+                    "adjustedDate" : "2011-10-06"
+                  }, {
+                    "adjustedDate" : "2011-10-07"
+                  }, {
+                    "adjustedDate" : "2011-10-11"
+                  }, {
+                    "adjustedDate" : "2011-10-12"
+                  }, {
+                    "adjustedDate" : "2011-10-13"
+                  }, {
+                    "adjustedDate" : "2011-10-14"
+                  }, {
+                    "adjustedDate" : "2011-10-17"
+                  }, {
+                    "adjustedDate" : "2011-10-18"
+                  }, {
+                    "adjustedDate" : "2011-10-19"
+                  }, {
+                    "adjustedDate" : "2011-10-20"
+                  }, {
+                    "adjustedDate" : "2011-10-21"
+                  }, {
+                    "adjustedDate" : "2011-10-24"
+                  }, {
+                    "adjustedDate" : "2011-10-25"
+                  }, {
+                    "adjustedDate" : "2011-10-26"
+                  }, {
+                    "adjustedDate" : "2011-10-27"
+                  }, {
+                    "adjustedDate" : "2011-10-28"
+                  }, {
+                    "adjustedDate" : "2011-10-31"
+                  }, {
+                    "adjustedDate" : "2011-11-01"
+                  }, {
+                    "adjustedDate" : "2011-11-02"
+                  }, {
+                    "adjustedDate" : "2011-11-03"
+                  }, {
+                    "adjustedDate" : "2011-11-04"
+                  }, {
+                    "adjustedDate" : "2011-11-07"
+                  }, {
+                    "adjustedDate" : "2011-11-08"
+                  }, {
+                    "adjustedDate" : "2011-11-09"
+                  }, {
+                    "adjustedDate" : "2011-11-10"
+                  }, {
+                    "adjustedDate" : "2011-11-14"
+                  }, {
+                    "adjustedDate" : "2011-11-15"
+                  }, {
+                    "adjustedDate" : "2011-11-16"
+                  }, {
+                    "adjustedDate" : "2011-11-17"
+                  }, {
+                    "adjustedDate" : "2011-11-18"
+                  } ]
+                }
+              }
+            },
+            "target" : [ {
+              "accumulationCondition" : [ {
+                "lowerBound" : {
+                  "triggerType" : "EqualOrGreater",
+                  "level" : {
+                    "@ref:scoped" : "price-1"
+                  }
+                }
+              } ],
+              "targetLevel" : {
+                "amount" : {
+                  "value" : 50000,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "USD"
+                    }
+                  }
+                },
+                "targetStyle" : "Exact",
+                "settlementAdjustmentStyle" : "VariedNotional"
+              }
+            } ]
+          }
+        },
+        "calculationAgent" : {
+          "calculationAgentParty" : "CalculationAgentIndependent"
+        }
+      }
+    },
+    "tradeLot" : [ {
+      "priceQuantity" : [ {
+        "price" : [ {
+          "@key:scoped" : "price-1",
+          "value" : 1.4600,
+          "unit" : {
+            "currency" : {
+              "@data" : "USD"
+            }
+          },
+          "perUnitOf" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          },
+          "priceType" : "ExchangeRate",
+          "derivedQuantity" : {
+            "value" : 146000.00,
+            "unit" : {
+              "currency" : {
+                "@data" : "USD"
+              }
+            }
+          }
+        } ],
+        "quantity" : {
+          "@key:scoped" : "quantity-1",
+          "value" : 100000.00,
+          "unit" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          }
+        },
+        "observable" : {
+          "@key:scoped" : "observable-1",
+          "@data" : {
+            "@type" : "cdm.base.staticdata.asset.common.Cash",
+            "identifier" : [ {
+              "identifier" : {
+                "@data" : "EUR"
+              },
+              "identifierType" : "CurrencyCode"
+            } ],
+            "assetType" : "Cash"
+          }
+        }
+      } ]
+    } ],
+    "counterparty" : [ {
+      "role" : "Party1",
+      "partyReference" : {
+        "@ref:external" : "party2"
+      }
+    }, {
+      "role" : "Party2",
+      "partyReference" : {
+        "@ref:external" : "party1"
+      }
+    } ],
+    "ancillaryParty" : [ {
+      "role" : "CalculationAgentIndependent",
+      "partyReference" : [ {
+        "@ref:external" : "party1"
+      } ]
+    } ],
+    "tradeIdentifier" : [ {
+      "issuerReference" : {
+        "@ref:external" : "party1"
+      },
+      "assignedIdentifier" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.abc.com/trade-id",
+          "@data" : "12345"
+        }
+      } ]
+    } ],
+    "tradeDate" : {
+      "@data" : "2011-09-11"
+    },
+    "party" : [ {
+      "@key:external" : "party1",
+      "partyId" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+          "@data" : "ABC Bank"
+        }
+      } ]
+    }, {
+      "@key:external" : "party2",
+      "partyId" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+          "@data" : "Counterparty"
+        }
+      } ]
+    } ]
+  },
+  "transferHistory" : [ {
+    "transfer" : {
+      "@type" : "cdm.event.common.UnscheduledTransfer",
+      "quantity" : {
+        "value" : 13700.00,
+        "unit" : {
+          "currency" : {
+            "@data" : "EUR"
+          }
+        }
+      },
+      "asset" : {
+        "@type" : "cdm.base.staticdata.asset.common.Cash",
+        "identifier" : [ {
+          "identifier" : {
+            "@data" : "EUR"
+          },
+          "identifierType" : "CurrencyCode"
+        } ],
+        "assetType" : "Cash"
+      },
+      "settlementDate" : {
+        "unadjustedDate" : "2011-09-11",
+        "dateAdjustments" : {
+          "businessDayConvention" : "NONE"
+        }
+      },
+      "payerReceiver" : {
+        "payerPartyReference" : {
+          "@ref:external" : "party2"
+        },
+        "receiverPartyReference" : {
+          "@ref:external" : "party1"
+        }
+      },
+      "transferType" : "Upfront"
+    }
+  } ]
+}

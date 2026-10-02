@@ -8,6 +8,15 @@ enum AveragingInOutEnum: <"The enumerated values to specify the type of averagin
     Out <"The average price is used to derive the expiration price. Also known as 'Asian price' style option.">
     Both <"The average price is used to derive both the strike and the expiration price.">
 
+enum TargetStyleEnum: <"The enumerated values to specify the gain paid for the fixing which reaches the target of a Target Redemption Forward.">
+    Exclusive <"The gain for the fixing which reaches the target is adjusted to zero, i.e. the target yields no value in the final period. Also known as 'no gain'.">
+    Exact <"The gain for the fixing which reaches the target is adjusted so that the accumulated gain equals the target. Also known as 'exact gain'.">
+    Inclusive <"The gain for the fixing which reaches the target is paid in full, i.e. the accumulated gain may exceed the target. Also known as 'full gain'.">
+
+enum SettlementAdjustmentStyleEnum: <"The enumerated values to specify how the settlement of the fixing which reaches the target is adjusted so that the accumulated gain equals the target.">
+    VariedStrike <"The strike is adjusted.">
+    VariedNotional <"The notional is adjusted.">
+
 enum OptionTypeEnum extends PutCallEnum: <"The enumerated values to specify the type or strategy of the option.">
     Payer <"A 'payer' option: If you buy a 'payer' option you have the right but not the obligation to enter into the underlying swap transaction as the 'fixed' rate/price payer and receive float.">
     Receiver <"A 'receiver' option: If you buy a 'receiver' option you have the right but not the obligation to enter into the underlying swap transaction as the 'fixed' rate/price receiver and pay float.">

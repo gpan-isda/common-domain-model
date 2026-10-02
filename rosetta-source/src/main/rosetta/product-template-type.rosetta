@@ -671,9 +671,54 @@ type TerminationProvision: <"A class for defining option provisions.">
     evergreenProvision EvergreenProvision (0..1) <"A data defining: the right of a party to exercise an Evergreen option">
     extendibleProvision ExtendibleProvision (0..1) <"A provision that allows the specification of an embedded option with a swap giving the buyer of the option the right to extend the swap, in whole or in part, to the extended termination date.">
     recallProvision RecallProvision (0..1) <"A provision defining criteria controlling the ability for a lender to recall securities it has lent out.">
+    contingentTerminationProvision ContingentTerminationProvision (0..1) <"A provision that terminates the whole trade when a path-dependent condition is met, e.g. the target of a Target Redemption Forward or a global knock-out barrier.">
 
     condition TerminationProvisionChoice:
-        required choice cancelableProvision, extendibleProvision, evergreenProvision, earlyTerminationProvision, recallProvision
+        required choice cancelableProvision, extendibleProvision, evergreenProvision, earlyTerminationProvision, recallProvision, contingentTerminationProvision
+
+type ContingentTerminationProvision: <"A provision that terminates the whole trade when a path-dependent condition is met, e.g. the target of a Target Redemption Forward (TARF) is reached or a global knock-out barrier is breached. As a difference from the early termination provision, this termination is not at fair value: no further settlements take place after the termination, other than those specified by the provision.">
+    [metadata key]
+
+    observationTerms ObservationTerms (0..1) <"The terms used to observe the fixings that drive the provision, e.g. the fixing source, the fixing time and the fixing (expiry) dates.">
+    target TargetTerms (0..2) <"The target(s) on the accumulated gain which, when reached, terminate the trade.">
+    knockOut TriggerEvent (0..*) <"The barrier(s) which, when breached, terminate the whole trade (global knock-out).">
+
+    condition TargetOrKnockOut: <"At least a target or a knock-out barrier must be specified.">
+        target exists or knockOut exists
+
+type TargetTerms: <"Defines a target on the gain accumulated across the fixings of a trade, as used in a Target Redemption Forward (TARF).">
+
+    accumulationCondition FixingCondition (1..2) <"The fixing region(s) in which the gain accumulates towards the target.">
+    targetLevel TargetLevel (1..1) <"The accumulated gain at which the trade terminates.">
+
+type TargetLevel: <"Defines the accumulated gain at which a trade terminates, and how the settlement of the fixing which reaches the target is determined.">
+
+    amount Money (0..1) <"The target expressed as an accumulated gain amount.">
+    intrinsicValue number (0..1) <"The target expressed as an accumulated intrinsic value, i.e. the sum of the differences between the fixing and the strike.">
+    targetStyle TargetStyleEnum (1..1) <"Specifies the gain paid for the fixing which reaches the target.">
+    settlementAdjustmentStyle SettlementAdjustmentStyleEnum (0..1) <"Specifies how the settlement of the fixing which reaches the target is adjusted so that the accumulated gain equals the target. Applies only when the target style is Exact.">
+
+    condition AmountChoice:
+        required choice amount, intrinsicValue
+
+    condition SettlementAdjustmentStyle: <"The settlement adjustment style must be specified when the target style is Exact, and must be absent otherwise.">
+        if targetStyle = TargetStyleEnum -> Exact
+        then settlementAdjustmentStyle exists
+        else settlementAdjustmentStyle is absent
+
+type FixingCondition: <"Defines a region of the observed fixing, bounded by a lower bound, an upper bound or both.">
+
+    lowerBound FixingBound (0..1) <"The lower bound of the region.">
+    upperBound FixingBound (0..1) <"The upper bound of the region.">
+
+    condition BoundExists: <"At least one bound must be specified.">
+        lowerBound exists or upperBound exists
+
+type FixingBound: <"Defines a bound of a fixing region as a comparison of the observed fixing with a level.">
+
+    triggerType TriggerTypeEnum (1..1) <"The comparison of the observed fixing with the level, e.g. EqualOrGreater means that the fixing must be at or above the level.">
+    level PriceSchedule (1..1) <"The level of the bound, either specified directly or by reference to a price of the trade, e.g. the strike.">
+        [metadata address "pointsTo"=PriceQuantity->price]
 
 type RecallProvision: <"Defines the additional features that allow securities to be recalled by the lender before the term of the loan. A recall is not the same as an early termination, but may result in the early termination of a loan.">
     isRecallable boolean (1..1) <"Whether the securities on loan can be recalled by the lender.">

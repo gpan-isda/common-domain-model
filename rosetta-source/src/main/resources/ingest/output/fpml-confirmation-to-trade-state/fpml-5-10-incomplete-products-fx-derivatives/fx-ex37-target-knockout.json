@@ -1,0 +1,244 @@
+{
+  "@model" : "cdm",
+  "@type" : "cdm.event.common.TradeState",
+  "@version" : "0.0.0.master-SNAPSHOT",
+  "@key" : "73f7c37b",
+  "trade" : {
+    "product" : {
+      "taxonomy" : [ {
+        "source" : "Other",
+        "value" : {
+          "name" : {
+            "@scheme" : "http://www.fpml.org/coding-scheme/product-type-simple",
+            "@data" : "FxTarget"
+          }
+        }
+      }, {
+        "source" : "ISDA",
+        "value" : {
+          "name" : {
+            "@data" : "ForeignExchange_ComplexExotic_TargetRedemptionForward"
+          }
+        },
+        "calculated" : true
+      } ],
+      "economicTerms" : {
+        "payout" : [ {
+          "@type" : "cdm.product.template.SettlementPayout",
+          "payerReceiver" : {
+            "payer" : "Party2",
+            "receiver" : "Party1"
+          },
+          "priceQuantity" : {
+            "quantitySchedule" : {
+              "@ref:scoped" : "quantity-1"
+            },
+            "priceSchedule" : [ {
+              "@ref:scoped" : "price-1"
+            } ]
+          },
+          "settlementTerms" : {
+            "settlementType" : "Physical",
+            "settlementDate" : {
+              "adjustableDates" : {
+                "dateAdjustments" : {
+                  "businessDayConvention" : "MODFOLLOWING"
+                },
+                "adjustedDate" : [ {
+                  "@data" : "2014-12-24"
+                }, {
+                  "@data" : "2015-01-28"
+                }, {
+                  "@data" : "2015-02-26"
+                }, {
+                  "@data" : "2015-03-27"
+                } ]
+              }
+            }
+          },
+          "underlier" : {
+            "@type" : "cdm.observable.asset.Observable",
+            "@ref:scoped" : "observable-1"
+          }
+        } ],
+        "terminationProvision" : {
+          "contingentTerminationProvision" : {
+            "observationTerms" : {
+              "observationTime" : {
+                "hourMinuteTime" : "14:15:00",
+                "businessCenter" : {
+                  "@data" : "DEFR"
+                }
+              },
+              "informationSource" : {
+                "primarySource" : {
+                  "sourceProvider" : {
+                    "@data" : "Reuters"
+                  },
+                  "sourcePage" : {
+                    "@data" : "ECB37"
+                  }
+                }
+              },
+              "observationDates" : {
+                "observationSchedule" : {
+                  "observationDate" : [ {
+                    "adjustedDate" : "2014-12-23"
+                  }, {
+                    "adjustedDate" : "2015-01-27"
+                  }, {
+                    "adjustedDate" : "2015-02-25"
+                  }, {
+                    "adjustedDate" : "2015-03-26"
+                  } ]
+                }
+              }
+            },
+            "target" : [ {
+              "accumulationCondition" : [ {
+                "upperBound" : {
+                  "triggerType" : "Less",
+                  "level" : {
+                    "@ref:scoped" : "price-1"
+                  }
+                }
+              } ],
+              "targetLevel" : {
+                "amount" : {
+                  "value" : 200000.00,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "USD"
+                    }
+                  }
+                },
+                "targetStyle" : "Exact",
+                "settlementAdjustmentStyle" : "VariedStrike"
+              }
+            } ],
+            "knockOut" : [ {
+              "trigger" : {
+                "level" : [ {
+                  "value" : 1.3750,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "EUR"
+                    }
+                  },
+                  "perUnitOf" : {
+                    "currency" : {
+                      "@data" : "USD"
+                    }
+                  },
+                  "priceType" : "ExchangeRate"
+                } ],
+                "triggerType" : "EqualOrGreater",
+                "triggerTimeType" : "Anytime"
+              }
+            } ]
+          }
+        },
+        "calculationAgent" : {
+          "calculationAgentParty" : "CalculationAgentIndependent"
+        }
+      }
+    },
+    "tradeLot" : [ {
+      "priceQuantity" : [ {
+        "price" : [ {
+          "@key:scoped" : "price-1",
+          "value" : 1.2350,
+          "unit" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          },
+          "perUnitOf" : {
+            "currency" : {
+              "@data" : "USD"
+            }
+          },
+          "priceType" : "ExchangeRate",
+          "derivedQuantity" : {
+            "value" : 2090000.00,
+            "unit" : {
+              "currency" : {
+                "@data" : "USD"
+              }
+            }
+          }
+        } ],
+        "quantity" : {
+          "@key:scoped" : "quantity-1",
+          "value" : 1000000.00,
+          "unit" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          }
+        },
+        "observable" : {
+          "@key:scoped" : "observable-1",
+          "@data" : {
+            "@type" : "cdm.base.staticdata.asset.common.Cash",
+            "identifier" : [ {
+              "identifier" : {
+                "@data" : "EUR"
+              },
+              "identifierType" : "CurrencyCode"
+            } ],
+            "assetType" : "Cash"
+          }
+        }
+      } ]
+    } ],
+    "counterparty" : [ {
+      "role" : "Party1",
+      "partyReference" : {
+        "@ref:external" : "ptyB"
+      }
+    }, {
+      "role" : "Party2",
+      "partyReference" : {
+        "@ref:external" : "ptyA"
+      }
+    } ],
+    "ancillaryParty" : [ {
+      "role" : "CalculationAgentIndependent",
+      "partyReference" : [ {
+        "@ref:external" : "ptyA"
+      } ]
+    } ],
+    "tradeIdentifier" : [ {
+      "issuerReference" : {
+        "@ref:external" : "ptyA"
+      },
+      "assignedIdentifier" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.partyA.com/fx/trade-id",
+          "@data" : "12345"
+        }
+      } ]
+    } ],
+    "tradeDate" : {
+      "@data" : "2010-11-07"
+    },
+    "party" : [ {
+      "@key:external" : "ptyA",
+      "partyId" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+          "@data" : "Party A"
+        }
+      } ]
+    }, {
+      "@key:external" : "ptyB",
+      "partyId" : [ {
+        "identifier" : {
+          "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+          "@data" : "Party B"
+        }
+      } ]
+    } ]
+  }
+}
