@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "e99e5fe9",
+  "@key" : "c4469c46",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -62,9 +62,230 @@
               }
             }
           } ],
+          "leverage" : {
+            "fixingCondition" : {
+              "upperBound" : {
+                "triggerType" : "Less",
+                "level" : {
+                  "@ref:scoped" : "price-1"
+                }
+              }
+            },
+            "quantity" : {
+              "value" : 1000000.00,
+              "unit" : {
+                "currency" : {
+                  "@data" : "EUR"
+                }
+              }
+            }
+          },
           "underlier" : {
             "@type" : "cdm.observable.asset.Observable",
             "@ref:scoped" : "observable-1"
+          },
+          "schedule" : {
+            "schedulePeriod" : [ {
+              "calculationPeriod" : {
+                "startDate" : "2014-06-30",
+                "endDate" : "2014-06-30"
+              },
+              "paymentDate" : "2014-07-02",
+              "fixingPeriod" : {
+                "startDate" : "2014-06-30",
+                "endDate" : "2014-06-30"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-07-14",
+                "endDate" : "2014-07-14"
+              },
+              "paymentDate" : "2014-07-16",
+              "fixingPeriod" : {
+                "startDate" : "2014-07-14",
+                "endDate" : "2014-07-14"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-07-28",
+                "endDate" : "2014-07-28"
+              },
+              "paymentDate" : "2014-07-30",
+              "fixingPeriod" : {
+                "startDate" : "2014-07-28",
+                "endDate" : "2014-07-28"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-08-11",
+                "endDate" : "2014-08-11"
+              },
+              "paymentDate" : "2014-08-13",
+              "fixingPeriod" : {
+                "startDate" : "2014-08-11",
+                "endDate" : "2014-08-11"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-08-25",
+                "endDate" : "2014-08-25"
+              },
+              "paymentDate" : "2014-08-27",
+              "fixingPeriod" : {
+                "startDate" : "2014-08-25",
+                "endDate" : "2014-08-25"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-09-08",
+                "endDate" : "2014-09-08"
+              },
+              "paymentDate" : "2014-09-10",
+              "fixingPeriod" : {
+                "startDate" : "2014-09-08",
+                "endDate" : "2014-09-08"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-09-22",
+                "endDate" : "2014-09-22"
+              },
+              "paymentDate" : "2014-09-24",
+              "fixingPeriod" : {
+                "startDate" : "2014-09-22",
+                "endDate" : "2014-09-22"
+              }
+            } ]
+          }
+        }, {
+          "@type" : "cdm.product.template.SettlementPayout",
+          "payerReceiver" : {
+            "payer" : "Party1",
+            "receiver" : "Party2"
+          },
+          "priceQuantity" : {
+            "quantitySchedule" : {
+              "@ref:scoped" : "quantity-1"
+            },
+            "priceSchedule" : [ {
+              "@ref:scoped" : "price-2"
+            } ]
+          },
+          "settlementTerms" : {
+            "settlementType" : "Physical",
+            "settlementDate" : {
+              "adjustableDates" : {
+                "dateAdjustments" : {
+                  "businessDayConvention" : "MODFOLLOWING"
+                },
+                "adjustedDate" : [ {
+                  "@data" : "2014-07-02"
+                }, {
+                  "@data" : "2014-07-16"
+                }, {
+                  "@data" : "2014-07-30"
+                }, {
+                  "@data" : "2014-08-13"
+                }, {
+                  "@data" : "2014-08-27"
+                }, {
+                  "@data" : "2014-09-10"
+                }, {
+                  "@data" : "2014-09-24"
+                } ]
+              }
+            }
+          },
+          "applicability" : [ {
+            "lowerBound" : {
+              "triggerType" : "EqualOrGreater",
+              "level" : {
+                "@ref:scoped" : "price-1"
+              }
+            },
+            "upperBound" : {
+              "triggerType" : "EqualOrLess",
+              "level" : {
+                "@ref:scoped" : "price-3"
+              }
+            }
+          } ],
+          "underlier" : {
+            "@type" : "cdm.observable.asset.Observable",
+            "@ref:scoped" : "observable-1"
+          },
+          "schedule" : {
+            "schedulePeriod" : [ {
+              "calculationPeriod" : {
+                "startDate" : "2014-06-30",
+                "endDate" : "2014-06-30"
+              },
+              "paymentDate" : "2014-07-02",
+              "fixingPeriod" : {
+                "startDate" : "2014-06-30",
+                "endDate" : "2014-06-30"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-07-14",
+                "endDate" : "2014-07-14"
+              },
+              "paymentDate" : "2014-07-16",
+              "fixingPeriod" : {
+                "startDate" : "2014-07-14",
+                "endDate" : "2014-07-14"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-07-28",
+                "endDate" : "2014-07-28"
+              },
+              "paymentDate" : "2014-07-30",
+              "fixingPeriod" : {
+                "startDate" : "2014-07-28",
+                "endDate" : "2014-07-28"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-08-11",
+                "endDate" : "2014-08-11"
+              },
+              "paymentDate" : "2014-08-13",
+              "fixingPeriod" : {
+                "startDate" : "2014-08-11",
+                "endDate" : "2014-08-11"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-08-25",
+                "endDate" : "2014-08-25"
+              },
+              "paymentDate" : "2014-08-27",
+              "fixingPeriod" : {
+                "startDate" : "2014-08-25",
+                "endDate" : "2014-08-25"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-09-08",
+                "endDate" : "2014-09-08"
+              },
+              "paymentDate" : "2014-09-10",
+              "fixingPeriod" : {
+                "startDate" : "2014-09-08",
+                "endDate" : "2014-09-08"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-09-22",
+                "endDate" : "2014-09-22"
+              },
+              "paymentDate" : "2014-09-24",
+              "fixingPeriod" : {
+                "startDate" : "2014-09-22",
+                "endDate" : "2014-09-22"
+              }
+            } ]
           }
         } ],
         "terminationProvision" : {
@@ -107,11 +328,13 @@
               }
             },
             "target" : [ {
-              "accumulationCondition" : [ {
-                "lowerBound" : {
-                  "triggerType" : "Greater",
-                  "level" : {
-                    "@ref:scoped" : "price-2"
+              "accumulationRegion" : [ {
+                "fixingCondition" : {
+                  "lowerBound" : {
+                    "triggerType" : "Greater",
+                    "level" : {
+                      "@ref:scoped" : "price-3"
+                    }
                   }
                 }
               } ],
@@ -144,6 +367,21 @@
             }
           },
           "priceType" : "ExchangeRate"
+        }, {
+          "@key:scoped" : "price-2",
+          "value" : 0.0150,
+          "unit" : {
+            "currency" : {
+              "@data" : "USD"
+            }
+          },
+          "perUnitOf" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          },
+          "priceType" : "ExchangeRate",
+          "arithmeticOperator" : "Add"
         } ],
         "quantity" : {
           "@key:scoped" : "quantity-1",

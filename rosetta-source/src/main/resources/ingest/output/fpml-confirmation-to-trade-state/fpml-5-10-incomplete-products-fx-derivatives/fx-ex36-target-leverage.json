@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "419a395c",
+  "@key" : "3618d462",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -154,11 +154,13 @@
               }
             },
             "target" : [ {
-              "accumulationCondition" : [ {
-                "lowerBound" : {
-                  "triggerType" : "Greater",
-                  "level" : {
-                    "@ref:scoped" : "price-1"
+              "accumulationRegion" : [ {
+                "fixingCondition" : {
+                  "lowerBound" : {
+                    "triggerType" : "Greater",
+                    "level" : {
+                      "@ref:scoped" : "price-1"
+                    }
                   }
                 }
               } ],

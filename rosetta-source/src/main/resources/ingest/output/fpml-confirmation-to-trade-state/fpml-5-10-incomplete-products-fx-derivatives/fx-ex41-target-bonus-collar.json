@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "e99e5fe9",
+  "@key" : "767288ca",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -62,6 +62,81 @@
               }
             }
           } ],
+          "leverage" : {
+            "fixingCondition" : {
+              "upperBound" : {
+                "triggerType" : "Less",
+                "level" : {
+                  "@ref:scoped" : "price-1"
+                }
+              }
+            },
+            "quantity" : {
+              "value" : 1000000.00,
+              "unit" : {
+                "currency" : {
+                  "@data" : "EUR"
+                }
+              }
+            }
+          },
+          "underlier" : {
+            "@type" : "cdm.observable.asset.Observable",
+            "@ref:scoped" : "observable-1"
+          }
+        }, {
+          "@type" : "cdm.product.template.SettlementPayout",
+          "payerReceiver" : {
+            "payer" : "Party1",
+            "receiver" : "Party2"
+          },
+          "priceQuantity" : {
+            "quantitySchedule" : {
+              "@ref:scoped" : "quantity-1"
+            },
+            "priceSchedule" : [ {
+              "@ref:scoped" : "price-2"
+            } ]
+          },
+          "settlementTerms" : {
+            "settlementType" : "Physical",
+            "settlementDate" : {
+              "adjustableDates" : {
+                "dateAdjustments" : {
+                  "businessDayConvention" : "MODFOLLOWING"
+                },
+                "adjustedDate" : [ {
+                  "@data" : "2014-07-02"
+                }, {
+                  "@data" : "2014-07-16"
+                }, {
+                  "@data" : "2014-07-30"
+                }, {
+                  "@data" : "2014-08-13"
+                }, {
+                  "@data" : "2014-08-27"
+                }, {
+                  "@data" : "2014-09-10"
+                }, {
+                  "@data" : "2014-09-24"
+                } ]
+              }
+            }
+          },
+          "applicability" : [ {
+            "lowerBound" : {
+              "triggerType" : "EqualOrGreater",
+              "level" : {
+                "@ref:scoped" : "price-1"
+              }
+            },
+            "upperBound" : {
+              "triggerType" : "EqualOrLess",
+              "level" : {
+                "@ref:scoped" : "price-3"
+              }
+            }
+          } ],
           "underlier" : {
             "@type" : "cdm.observable.asset.Observable",
             "@ref:scoped" : "observable-1"
@@ -107,11 +182,13 @@
               }
             },
             "target" : [ {
-              "accumulationCondition" : [ {
-                "lowerBound" : {
-                  "triggerType" : "Greater",
-                  "level" : {
-                    "@ref:scoped" : "price-2"
+              "accumulationRegion" : [ {
+                "fixingCondition" : {
+                  "lowerBound" : {
+                    "triggerType" : "Greater",
+                    "level" : {
+                      "@ref:scoped" : "price-3"
+                    }
                   }
                 }
               } ],
@@ -144,6 +221,21 @@
             }
           },
           "priceType" : "ExchangeRate"
+        }, {
+          "@key:scoped" : "price-2",
+          "value" : 0.0150,
+          "unit" : {
+            "currency" : {
+              "@data" : "USD"
+            }
+          },
+          "perUnitOf" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          },
+          "priceType" : "ExchangeRate",
+          "arithmeticOperator" : "Add"
         } ],
         "quantity" : {
           "@key:scoped" : "quantity-1",

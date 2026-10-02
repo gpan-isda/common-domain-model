@@ -697,12 +697,17 @@ type OutstandingGainRebate: <"Defines a rebate equal to the gain which remains t
 
 type TargetTerms: <"Defines a target on the gain accumulated across the fixings of a trade, as used in a Target Redemption Forward (TARF).">
 
-    accumulationCondition FixingCondition (1..2) <"The fixing region(s) in which the gain accumulates towards the target.">
+    accumulationRegion AccumulationRegion (1..2) <"The fixing region(s) in which the gain accumulates towards the target.">
     targetLevel TargetLevel (0..1) <"The target expressed as an accumulated gain.">
     targetCount TargetCount (0..1) <"The target expressed as a number of fixings in the accumulation region(s).">
 
     condition TargetChoice:
         required choice targetLevel, targetCount
+
+type AccumulationRegion: <"Defines a fixing region in which the gain accumulates towards a target, and the multiplier applied to the gain accumulated in that region.">
+
+    fixingCondition FixingCondition (1..1) <"The fixing region.">
+    multiplier number (0..1) <"The multiplier applied to the gain accumulated in the region, e.g. in an accelerated Target Redemption Forward. When absent, the gain accumulates without multiplier.">
 
 type TargetCount: <"Defines a target as a number of fixings in the accumulation region(s), e.g. a number of in-the-money fixings.">
 

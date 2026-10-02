@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "e0763759",
+  "@key" : "492944cf",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -64,6 +64,52 @@
             "@type" : "cdm.observable.asset.Observable",
             "@ref:scoped" : "observable-1"
           }
+        }, {
+          "@type" : "cdm.product.template.SettlementPayout",
+          "payerReceiver" : {
+            "payer" : "Party2",
+            "receiver" : "Party1"
+          },
+          "priceQuantity" : {
+            "quantitySchedule" : {
+              "@ref:scoped" : "quantity-2"
+            }
+          },
+          "settlementTerms" : {
+            "settlementType" : "Cash",
+            "settlementDate" : {
+              "adjustableDates" : {
+                "dateAdjustments" : {
+                  "businessDayConvention" : "MODFOLLOWING"
+                },
+                "adjustedDate" : [ {
+                  "@data" : "2014-12-24"
+                }, {
+                  "@data" : "2014-01-28"
+                }, {
+                  "@data" : "2014-02-26"
+                }, {
+                  "@data" : "2014-03-27"
+                }, {
+                  "@data" : "2014-04-28"
+                }, {
+                  "@data" : "2014-05-28"
+                } ]
+              }
+            }
+          },
+          "applicability" : [ {
+            "upperBound" : {
+              "triggerType" : "Less",
+              "level" : {
+                "@ref:scoped" : "price-1"
+              }
+            }
+          } ],
+          "underlier" : {
+            "@type" : "cdm.observable.asset.Observable",
+            "@ref:scoped" : "observable-1"
+          }
         } ],
         "terminationProvision" : {
           "contingentTerminationProvision" : {
@@ -103,11 +149,13 @@
               }
             },
             "target" : [ {
-              "accumulationCondition" : [ {
-                "lowerBound" : {
-                  "triggerType" : "EqualOrGreater",
-                  "level" : {
-                    "@ref:scoped" : "price-1"
+              "accumulationRegion" : [ {
+                "fixingCondition" : {
+                  "lowerBound" : {
+                    "triggerType" : "EqualOrGreater",
+                    "level" : {
+                      "@ref:scoped" : "price-1"
+                    }
                   }
                 }
               } ],
@@ -168,6 +216,16 @@
               "identifierType" : "CurrencyCode"
             } ],
             "assetType" : "Cash"
+          }
+        }
+      }, {
+        "quantity" : {
+          "@key:scoped" : "quantity-2",
+          "value" : 40000.00,
+          "unit" : {
+            "currency" : {
+              "@data" : "USD"
+            }
           }
         }
       } ]

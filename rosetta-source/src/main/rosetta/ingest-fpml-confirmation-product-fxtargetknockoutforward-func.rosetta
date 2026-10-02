@@ -63,13 +63,10 @@ func MapFxTargetKnockoutForwardEconomicTerms:
 
     set economicTerms:
         EconomicTerms {
-            payout: GetFxTargetLinearPayoffRegionList(fpmlFxTargetKnockoutForward)
-                    extract
-                        MapFxTargetLinearPayoffRegionToSettlementPayout(
-                                item,
-                                fpmlFxTargetKnockoutForward,
-                                cdmCounterpartyList
-                            ),
+            payout: MapFxTargetKnockoutForwardPayoutList(
+                        fpmlFxTargetKnockoutForward,
+                        cdmCounterpartyList
+                    ),
             terminationProvision:
                 TerminationProvision {
                     contingentTerminationProvision: MapFxTargetKnockoutForwardContingentTerminationProvision(
@@ -79,6 +76,32 @@ func MapFxTargetKnockoutForwardEconomicTerms:
                 },
             ...
         }
+
+func MapFxTargetKnockoutForwardPayoutList: <"Maps the linear payoff regions and the constant payoff regions with a payoff of a TARF to settlement payouts.">
+    inputs:
+        fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
+        cdmCounterpartyList Counterparty (0..2)
+    output:
+        payoutList Payout (0..*)
+
+    add payoutList:
+        GetFxTargetLinearPayoffRegionList(fpmlFxTargetKnockoutForward)
+            extract
+                MapFxTargetLinearPayoffRegionToSettlementPayout(
+                        item,
+                        fpmlFxTargetKnockoutForward,
+                        cdmCounterpartyList
+                    )
+
+    add payoutList:
+        GetFxTargetConstantPayoffRegionList(fpmlFxTargetKnockoutForward)
+            filter payoff exists
+            then extract
+                MapFxTargetConstantPayoffRegionToSettlementPayout(
+                        item,
+                        fpmlFxTargetKnockoutForward,
+                        cdmCounterpartyList
+                    )
 
 func GetFxTargetLinearPayoffRegionList: <"Returns all the linear payoff regions of a TARF.">
     inputs:
@@ -91,17 +114,25 @@ func GetFxTargetLinearPayoffRegionList: <"Returns all the linear payoff regions 
     add fpmlLinearPayoffRegionList:
         fpmlFxTargetKnockoutForward -> fxTargetKnockoutForwardChoice -> linearPayoffRegion
 
-func GetFxTargetZeroPayoffRegionList: <"Returns the constant payoff regions of a TARF which have no payoff, i.e. the zero regions.">
+func GetFxTargetConstantPayoffRegionList: <"Returns all the constant payoff regions of a TARF.">
     inputs:
         fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
     output:
         fpmlConstantPayoffRegionList fpml.FxTargetConstantPayoffRegion (0..*)
 
-    add fpmlConstantPayoffRegionList:
-        fpmlFxTargetKnockoutForward -> constantPayoffRegion filter payoff is absent
+    add fpmlConstantPayoffRegionList: fpmlFxTargetKnockoutForward -> constantPayoffRegion
 
     add fpmlConstantPayoffRegionList:
         fpmlFxTargetKnockoutForward -> fxTargetKnockoutForwardChoice -> constantPayoffRegion
+
+func GetFxTargetZeroPayoffRegionList: <"Returns the constant payoff regions of a TARF which have no payoff, i.e. the zero regions.">
+    inputs:
+        fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
+    output:
+        fpmlZeroPayoffRegionList fpml.FxTargetConstantPayoffRegion (0..*)
+
+    add fpmlZeroPayoffRegionList:
+        GetFxTargetConstantPayoffRegionList(fpmlFxTargetKnockoutForward)
             filter payoff is absent
 
 func MapFxTargetLinearPayoffRegionToSettlementPayout: <"Maps a linear payoff region of a TARF to a settlement payout, i.e. the forward which settles at each fixing in the region.">
@@ -190,6 +221,9 @@ func MapFxTargetLinearPayoffRegionToSettlementPayout: <"Maps a linear payoff reg
                                         },
                                 ...
                             },
+                        schedule: MapFxTargetSettlementPeriodScheduleToCalculationSchedule(
+                                    fpmlFxTargetKnockoutForward -> settlementPeriodSchedule
+                                ),
                         applicability: applicabilityList,
                         leverage: MapFxTargetLeverageToConditionalLeverage(
                                     fpmlLinearPayoffRegion -> leverage,
@@ -207,6 +241,171 @@ func MapFxTargetLinearPayoffRegionToSettlementPayout: <"Maps a linear payoff reg
                     },
                 ...
             }
+
+func MapFxTargetConstantPayoffRegionToSettlementPayout: <"Maps a constant payoff region of a TARF which has a payoff to a settlement payout which applies at each fixing in the region: either a cash payment (e.g. a digital TARF), or a forward settled at the fixing adjusted by a fixing adjustment (e.g. the bonus of a bonus collar TARF).">
+    inputs:
+        fpmlConstantPayoffRegion fpml.FxTargetConstantPayoffRegion (0..1)
+        fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
+        cdmCounterpartyList Counterparty (0..2)
+    output:
+        payout Payout (0..1)
+
+    alias fpmlPayoff: fpmlConstantPayoffRegion -> payoff
+
+    alias fpmlPayment: fpmlPayoff -> payment
+
+    alias fpmlNotionalCurrency: fpmlFxTargetKnockoutForward -> notionalAmount -> currency
+
+    alias fpmlPhysicalSettlement: fpmlConstantPayoffRegion -> physicalSettlement
+
+    alias exchangedCurrency:
+        if fpmlPhysicalSettlement -> exchangedCurrency1 -> currency -> value = fpmlNotionalCurrency -> value
+        then fpmlPhysicalSettlement -> exchangedCurrency1
+        else fpmlPhysicalSettlement -> exchangedCurrency2
+
+    alias fpmlSettlementSchedule: fpmlFxTargetKnockoutForward -> settlementSchedule
+
+    alias settlementDate:
+        if fpmlSettlementSchedule -> adjustedDate exists
+        then SettlementDate {
+                adjustableDates:
+                    AdjustableDates {
+                        adjustedDate: fpmlSettlementSchedule -> adjustedDate -> date,
+                        dateAdjustments: MapBusinessDayAdjustments(
+                                    fpmlSettlementSchedule -> dateAdjustments
+                                ),
+                        ...
+                    },
+                ...
+            }
+
+    alias applicability:
+        FixingCondition {
+            lowerBound: MapFxTargetRegionLowerBoundToFixingBound(
+                        fpmlConstantPayoffRegion -> lowerBound,
+                        fpmlFxTargetKnockoutForward
+                    ),
+            upperBound: MapFxTargetRegionUpperBoundToFixingBound(
+                        fpmlConstantPayoffRegion -> upperBound,
+                        fpmlFxTargetKnockoutForward
+                    )
+        }
+
+    alias schedule:
+        MapFxTargetSettlementPeriodScheduleToCalculationSchedule(
+                fpmlFxTargetKnockoutForward -> settlementPeriodSchedule
+            )
+
+    set payout:
+        if fpmlPayment exists
+        then Payout {
+                SettlementPayout:
+                    SettlementPayout {
+                        payerReceiver: MapPayerReceiver(
+                                    fpmlPayoff -> payerPartyReference,
+                                    fpmlPayoff -> receiverPartyReference,
+                                    cdmCounterpartyList
+                                ),
+                        priceQuantity:
+                            ResolvablePriceQuantity {
+                                quantitySchedule: CreateQuantityWithAddress(
+                                            CreateQuantityKey(
+                                                    "constantPayoff" + fpmlPayment -> currency -> value,
+                                                    empty
+                                                )
+                                        ),
+                                ...
+                            },
+                        settlementTerms:
+                            SettlementTerms {
+                                settlementType: SettlementTypeEnum -> Cash,
+                                settlementDate: settlementDate,
+                                ...
+                            },
+                        schedule: schedule,
+                        applicability: applicability,
+                        underlier:
+                            Underlier {
+                                Observable: MapCurrencyToObservableCashWithAddress(
+                                            fpmlPayment -> currency,
+                                            empty
+                                        ),
+                                ...
+                            },
+                        ...
+                    },
+                ...
+            }
+        else if fpmlPayoff -> fixingAdjustment exists
+        then Payout {
+                SettlementPayout:
+                    SettlementPayout {
+                        payerReceiver: MapPayerReceiver(
+                                    exchangedCurrency -> payerPartyReference,
+                                    exchangedCurrency -> receiverPartyReference,
+                                    cdmCounterpartyList
+                                ),
+                        priceQuantity:
+                            ResolvablePriceQuantity {
+                                quantitySchedule: CreateQuantityWithAddress(
+                                            CreateQuantityKey(
+                                                    fpmlNotionalCurrency -> value,
+                                                    empty
+                                                )
+                                        ),
+                                priceSchedule: CreatePriceWithAddress(
+                                            CreatePriceKey("fixingAdjustment", empty)
+                                        ),
+                                ...
+                            },
+                        settlementTerms:
+                            SettlementTerms {
+                                settlementType: if fpmlFxTargetKnockoutForward -> cashSettlement exists
+                                        then SettlementTypeEnum -> Cash
+                                    else SettlementTypeEnum -> Physical,
+                                settlementDate: settlementDate,
+                                ...
+                            },
+                        schedule: schedule,
+                        applicability: applicability,
+                        underlier:
+                            Underlier {
+                                Observable: MapCurrencyToObservableCashWithAddress(
+                                            exchangedCurrency -> currency,
+                                            empty
+                                        ),
+                                ...
+                            },
+                        ...
+                    },
+                ...
+            }
+
+func MapFxTargetSettlementPeriodScheduleToCalculationSchedule: <"Maps the expiry and settlement dates of the settlement periods of a TARF to a calculation schedule. Other per-period terms (notional, strike, leverage, barrier) are not mapped.">
+    inputs:
+        fpmlSettlementPeriodSchedule fpml.FxTargetSettlementPeriodSchedule (0..1)
+    output:
+        calculationSchedule CalculationSchedule (0..1)
+
+    set calculationSchedule:
+        if fpmlSettlementPeriodSchedule exists
+        then CalculationSchedule {
+                schedulePeriod: fpmlSettlementPeriodSchedule -> settlementPeriod
+                        extract
+                            SchedulePeriod {
+                                calculationPeriod:
+                                    DateRange {
+                                        startDate: item -> expiryDate -> date,
+                                        endDate: item -> expiryDate -> date
+                                    },
+                                paymentDate: item -> settlementDate -> date,
+                                fixingPeriod:
+                                    DateRange {
+                                        startDate: item -> expiryDate -> date,
+                                        endDate: item -> expiryDate -> date
+                                    },
+                                ...
+        }}
 
 func MapFxTargetZeroPayoffRegionToComplementList: <"Maps the complement of a zero payoff region of a TARF, i.e. the fixing regions in which the linear payoff applies. A zero region bounded on both sides results in two regions.">
     inputs:
@@ -232,6 +431,7 @@ func MapFxTargetZeroPayoffRegionToComplementList: <"Maps the complement of a zer
                                     fpmlLowerBound -> strikeReference,
                                     fpmlLowerBound -> pivotReference,
                                     fpmlLowerBound -> barrierReference,
+                                    fpmlLowerBound -> levelReference,
                                     fpmlFxTargetKnockoutForward
                                 )
                     },
@@ -251,13 +451,14 @@ func MapFxTargetZeroPayoffRegionToComplementList: <"Maps the complement of a zer
                                     fpmlUpperBound -> strikeReference,
                                     fpmlUpperBound -> pivotReference,
                                     fpmlUpperBound -> barrierReference,
+                                    fpmlUpperBound -> levelReference,
                                     fpmlFxTargetKnockoutForward
                                 )
                     },
                 ...
             }
 
-func MapFxTargetLeverageToConditionalLeverage: <"Maps the leverage of a TARF linear payoff region, when expressed as a ratio.">
+func MapFxTargetLeverageToConditionalLeverage: <"Maps the leverage of a TARF linear payoff region, expressed either as a ratio or as a notional amount.">
     inputs:
         fpmlLeverage fpml.FxTargetLeverage (0..1)
         fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
@@ -272,12 +473,13 @@ func MapFxTargetLeverageToConditionalLeverage: <"Maps the leverage of a TARF lin
                         fpmlLeverage -> strikeReference,
                         fpmlLeverage -> pivotReference,
                         fpmlLeverage -> barrierReference,
+                        fpmlLeverage -> levelReference,
                         fpmlFxTargetKnockoutForward
                     )
         }
 
     set conditionalLeverage:
-        if fpmlLeverage -> ratio exists
+        if fpmlLeverage -> ratio exists or fpmlLeverage -> notionalAmount exists
         then ConditionalLeverage {
                 fixingCondition: if fpmlLeverage -> condition = AtOrAbove
                             or fpmlLeverage -> condition = Above
@@ -289,13 +491,20 @@ func MapFxTargetLeverageToConditionalLeverage: <"Maps the leverage of a TARF lin
                         upperBound: fixingBound,
                         ...
                     },
-                ratio:
-                    NonNegativeSchedule {
-                        value: fpmlLeverage -> ratio -> initialValue,
-                        datedValue: MapScheduleToDatedValueList(
-                                    fpmlLeverage -> ratio -> step
-                                )
-        }}
+                ratio: if fpmlLeverage -> ratio exists
+                        then NonNegativeSchedule {
+                            value: fpmlLeverage -> ratio -> initialValue,
+                            datedValue: MapScheduleToDatedValueList(
+                                        fpmlLeverage -> ratio -> step
+                                    )
+                        },
+                quantity: MapCurrencyAmountToQuantity(
+                            fpmlLeverage -> notionalAmount -> initialValue,
+                            empty,
+                            fpmlLeverage -> notionalAmount -> currency,
+                            empty
+                        )
+            }
 
 func MapFxTargetKnockoutForwardContingentTerminationProvision: <"Maps the target(s), the global knock-out barrier(s) and the knock-out rebate of a TARF.">
     inputs:
@@ -376,17 +585,21 @@ func MapFxTargetToTargetTerms:
 
     set targetTerms:
         TargetTerms {
-            accumulationCondition: fpmlFxTarget -> accumulationRegion
+            accumulationRegion: fpmlFxTarget -> accumulationRegion
                     extract
-                        FixingCondition {
-                            lowerBound: MapFxTargetRegionLowerBoundToFixingBound(
-                                        item -> lowerBound,
-                                        fpmlFxTargetKnockoutForward
-                                    ),
-                            upperBound: MapFxTargetRegionUpperBoundToFixingBound(
-                                        item -> upperBound,
-                                        fpmlFxTargetKnockoutForward
-                                    )
+                        AccumulationRegion {
+                            fixingCondition:
+                                FixingCondition {
+                                    lowerBound: MapFxTargetRegionLowerBoundToFixingBound(
+                                                item -> lowerBound,
+                                                fpmlFxTargetKnockoutForward
+                                            ),
+                                    upperBound: MapFxTargetRegionUpperBoundToFixingBound(
+                                                item -> upperBound,
+                                                fpmlFxTargetKnockoutForward
+                                            )
+                                },
+                            multiplier: item -> multiplier
                         },
             targetLevel: if fpmlKnockoutLevel exists
                     then TargetLevel {
@@ -433,6 +646,7 @@ func MapFxTargetRegionLowerBoundToFixingBound:
                             fpmlLowerBound -> strikeReference,
                             fpmlLowerBound -> pivotReference,
                             fpmlLowerBound -> barrierReference,
+                            fpmlLowerBound -> levelReference,
                             fpmlFxTargetKnockoutForward
                         )
             }
@@ -456,20 +670,27 @@ func MapFxTargetRegionUpperBoundToFixingBound:
                             fpmlUpperBound -> strikeReference,
                             fpmlUpperBound -> pivotReference,
                             fpmlUpperBound -> barrierReference,
+                            fpmlUpperBound -> levelReference,
                             fpmlFxTargetKnockoutForward
                         )
             }
 
-func MapFxTargetLevelToPrice: <"Maps a level of a TARF (e.g. a region bound or a leverage condition), either as an explicit level, as an address to a strike, or as the value of the referenced pivot or barrier. Level references are not mapped.">
+func MapFxTargetLevelToPrice: <"Maps a level of a TARF (e.g. a region bound or a leverage condition), either as an explicit level, as an address to a strike, or as the value of the referenced pivot, barrier or level.">
     inputs:
         fpmlLevel fpml.FxLevel (0..1)
         fpmlStrikeReference fpml.FxStrikeReference (0..1)
         fpmlPivotReference fpml.FxPivotReference (0..1)
         fpmlBarrierReference fpml.FxComplexBarrierBaseReference (0..1)
+        fpmlLevelReference fpml.FxLevelReference (0..1)
         fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
     output:
         level PriceSchedule (0..1)
             [metadata address]
+
+    alias fpmlReferencedLevel:
+        GetFxTargetLevelList(fpmlFxTargetKnockoutForward)
+            filter id = fpmlLevelReference -> href
+            then first
 
     alias fpmlReferencedBarrier:
         fpmlFxTargetKnockoutForward -> barrier
@@ -491,6 +712,39 @@ func MapFxTargetLevelToPrice: <"Maps a level of a TARF (e.g. a region bound or a
                     fpmlReferencedBarrier -> triggerRate -> initialValue,
                     fpmlFxTargetKnockoutForward
                 )
+        else if fpmlLevelReference exists
+        then MapFxTargetRateToPrice(
+                    fpmlReferencedLevel -> initialValue,
+                    fpmlFxTargetKnockoutForward
+                )
+
+func GetFxTargetLevelList: <"Returns the explicit levels of a TARF which may be referenced by a level reference.">
+    inputs:
+        fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
+    output:
+        fpmlLevelList fpml.FxLevel (0..*)
+
+    alias fpmlLinearPayoffRegionList:
+        GetFxTargetLinearPayoffRegionList(fpmlFxTargetKnockoutForward)
+
+    alias fpmlConstantPayoffRegionList:
+        GetFxTargetConstantPayoffRegionList(fpmlFxTargetKnockoutForward)
+
+    add fpmlLevelList:
+        fpmlFxTargetKnockoutForward -> target -> accumulationRegion -> lowerBound -> level
+
+    add fpmlLevelList:
+        fpmlFxTargetKnockoutForward -> target -> accumulationRegion -> upperBound -> level
+
+    add fpmlLevelList: fpmlLinearPayoffRegionList -> lowerBound -> level
+
+    add fpmlLevelList: fpmlLinearPayoffRegionList -> upperBound -> level
+
+    add fpmlLevelList: fpmlLinearPayoffRegionList -> leverage -> level
+
+    add fpmlLevelList: fpmlConstantPayoffRegionList -> lowerBound -> level
+
+    add fpmlLevelList: fpmlConstantPayoffRegionList -> upperBound -> level
 
 func MapFxTargetBarrierToTriggerEvent: <"Maps a global knock-out barrier of a TARF.">
     inputs:
@@ -611,15 +865,7 @@ func MapFxTargetKnockoutForwardPriceQuantityList:
     add priceQuantityList:
         if fpmlLinearPayoffRegionList exists
         then PriceQuantity {
-                price: fpmlLinearPayoffRegionList
-                        extract
-                            CreatePriceWithLocation(
-                                    MapFxTargetStrikeToPrice(
-                                            item,
-                                            fpmlFxTargetKnockoutForward
-                                        ),
-                                    CreatePriceKey(item -> strike -> id, empty)
-                                ),
+                price: MapFxTargetKnockoutForwardPriceList(fpmlFxTargetKnockoutForward),
                 quantity: CreateQuantityWithLocation(
                             MapCurrencyAmountToQuantity(
                                     fpmlNotionalAmount -> initialValue,
@@ -636,6 +882,78 @@ func MapFxTargetKnockoutForwardPriceQuantityList:
                             fpmlNotionalAmount -> currency,
                             empty
                         ),
+                ...
+            }
+
+    add priceQuantityList:
+        GetFxTargetConstantPayoffRegionList(fpmlFxTargetKnockoutForward)
+            filter payoff -> payment exists
+            then extract
+                PriceQuantity {
+                    quantity: CreateQuantityWithLocation(
+                                MapCurrencyAmountToQuantity(
+                                        item -> payoff -> payment -> amount,
+                                        empty,
+                                        item -> payoff -> payment -> currency,
+                                        empty
+                                    ),
+                                CreateQuantityKey(
+                                        "constantPayoff" + item -> payoff -> payment -> currency -> value,
+                                        empty
+                                    )
+                            ),
+                    observable: if item -> payoff -> payment -> currency -> value <> fpmlNotionalAmount -> currency -> value
+                            then MapCurrencyToObservableCashWithLocation(
+                                    item -> payoff -> payment -> currency,
+                                    empty
+                                ),
+                    ...
+                }
+
+func MapFxTargetKnockoutForwardPriceList: <"Maps the strikes of the linear payoff regions and the fixing adjustments of the constant payoff regions of a TARF.">
+    inputs:
+        fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
+    output:
+        priceList PriceSchedule (0..*)
+            [metadata location]
+
+    add priceList:
+        GetFxTargetLinearPayoffRegionList(fpmlFxTargetKnockoutForward)
+            extract
+                CreatePriceWithLocation(
+                        MapFxTargetStrikeToPrice(item, fpmlFxTargetKnockoutForward),
+                        CreatePriceKey(item -> strike -> id, empty)
+                    )
+
+    add priceList:
+        GetFxTargetConstantPayoffRegionList(fpmlFxTargetKnockoutForward)
+            filter payoff -> fixingAdjustment exists
+            then extract
+                CreatePriceWithLocation(
+                        MapFxTargetFixingAdjustmentToPrice(
+                                item -> payoff -> fixingAdjustment,
+                                fpmlFxTargetKnockoutForward
+                            ),
+                        CreatePriceKey("fixingAdjustment", empty)
+                    )
+
+func MapFxTargetFixingAdjustmentToPrice: <"Maps the fixing adjustment of a TARF constant payoff region (e.g. the bonus of a bonus collar) to a price expressed as a spread added to the fixing.">
+    inputs:
+        fixingAdjustment number (0..1)
+        fpmlFxTargetKnockoutForward fpml.FxTargetKnockoutForward (0..1)
+    output:
+        price PriceSchedule (0..1)
+
+    alias rate: MapFxTargetRateToPrice(fixingAdjustment, fpmlFxTargetKnockoutForward)
+
+    set price:
+        if rate exists
+        then PriceSchedule {
+                value: rate -> value,
+                unit: rate -> unit,
+                perUnitOf: rate -> perUnitOf,
+                priceType: rate -> priceType,
+                arithmeticOperator: ArithmeticOperationEnum -> Add,
                 ...
             }
 

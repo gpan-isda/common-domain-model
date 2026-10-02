@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "2d6b00cd",
+  "@key" : "74875acc",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -99,6 +99,129 @@
           "underlier" : {
             "@type" : "cdm.observable.asset.Observable",
             "@ref:scoped" : "observable-1"
+          },
+          "schedule" : {
+            "schedulePeriod" : [ {
+              "calculationPeriod" : {
+                "startDate" : "2013-08-05",
+                "endDate" : "2013-08-05"
+              },
+              "paymentDate" : "2013-08-07",
+              "fixingPeriod" : {
+                "startDate" : "2013-08-05",
+                "endDate" : "2013-08-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2013-09-05",
+                "endDate" : "2013-09-05"
+              },
+              "paymentDate" : "2013-09-09",
+              "fixingPeriod" : {
+                "startDate" : "2013-09-05",
+                "endDate" : "2013-09-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2013-10-07",
+                "endDate" : "2013-10-07"
+              },
+              "paymentDate" : "2013-10-09",
+              "fixingPeriod" : {
+                "startDate" : "2013-10-07",
+                "endDate" : "2013-10-07"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2013-11-05",
+                "endDate" : "2013-11-05"
+              },
+              "paymentDate" : "2013-11-07",
+              "fixingPeriod" : {
+                "startDate" : "2013-11-05",
+                "endDate" : "2013-11-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2013-12-05",
+                "endDate" : "2013-12-05"
+              },
+              "paymentDate" : "2013-12-09",
+              "fixingPeriod" : {
+                "startDate" : "2013-12-05",
+                "endDate" : "2013-12-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-01-06",
+                "endDate" : "2014-01-06"
+              },
+              "paymentDate" : "2014-01-08",
+              "fixingPeriod" : {
+                "startDate" : "2014-01-06",
+                "endDate" : "2014-01-06"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-02-05",
+                "endDate" : "2014-02-05"
+              },
+              "paymentDate" : "2014-02-07",
+              "fixingPeriod" : {
+                "startDate" : "2014-02-05",
+                "endDate" : "2014-02-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-03-05",
+                "endDate" : "2014-03-05"
+              },
+              "paymentDate" : "2014-03-07",
+              "fixingPeriod" : {
+                "startDate" : "2014-03-05",
+                "endDate" : "2014-03-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-04-07",
+                "endDate" : "2014-04-07"
+              },
+              "paymentDate" : "2014-04-09",
+              "fixingPeriod" : {
+                "startDate" : "2014-04-07",
+                "endDate" : "2014-04-07"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-05-05",
+                "endDate" : "2014-05-05"
+              },
+              "paymentDate" : "2014-05-07",
+              "fixingPeriod" : {
+                "startDate" : "2014-05-05",
+                "endDate" : "2014-05-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-06-05",
+                "endDate" : "2014-06-05"
+              },
+              "paymentDate" : "2014-06-09",
+              "fixingPeriod" : {
+                "startDate" : "2014-06-05",
+                "endDate" : "2014-06-05"
+              }
+            }, {
+              "calculationPeriod" : {
+                "startDate" : "2014-07-03",
+                "endDate" : "2014-07-03"
+              },
+              "paymentDate" : "2014-07-07",
+              "fixingPeriod" : {
+                "startDate" : "2014-07-03",
+                "endDate" : "2014-07-03"
+              }
+            } ]
           }
         } ],
         "terminationProvision" : {
@@ -151,18 +274,22 @@
               }
             },
             "target" : [ {
-              "accumulationCondition" : [ {
-                "lowerBound" : {
-                  "triggerType" : "EqualOrGreater",
-                  "level" : {
-                    "@ref:scoped" : "price-2"
+              "accumulationRegion" : [ {
+                "fixingCondition" : {
+                  "lowerBound" : {
+                    "triggerType" : "EqualOrGreater",
+                    "level" : {
+                      "@ref:scoped" : "price-2"
+                    }
                   }
                 }
               }, {
-                "upperBound" : {
-                  "triggerType" : "EqualOrLess",
-                  "level" : {
-                    "@ref:scoped" : "price-1"
+                "fixingCondition" : {
+                  "upperBound" : {
+                    "triggerType" : "EqualOrLess",
+                    "level" : {
+                      "@ref:scoped" : "price-1"
+                    }
                   }
                 }
               } ],

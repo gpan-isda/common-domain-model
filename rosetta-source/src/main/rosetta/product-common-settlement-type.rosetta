@@ -80,7 +80,11 @@ type FixingBound: <"Defines a bound of a fixing region as a comparison of the ob
 type ConditionalLeverage: <"Defines a leverage applied to the quantity of a payout when the observed fixing is in a specified region, e.g. the leverage of a Target Redemption Forward or the gearing of an accumulator.">
 
     fixingCondition FixingCondition (1..1) <"The fixing region in which the leverage applies.">
-    ratio NonNegativeSchedule (1..1) <"The ratio applied to the quantity of the payout, which may step over time.">
+    ratio NonNegativeSchedule (0..1) <"The ratio applied to the quantity of the payout, which may step over time.">
+    quantity NonNegativeQuantitySchedule (0..1) <"The quantity of the payout which applies instead of its quantity, when the leverage is expressed as an amount rather than a ratio.">
+
+    condition LeverageChoice:
+        required choice ratio, quantity
 
 type PayoutBase: <"A data type that contains the common attributes (e.g. payer and receiver parties) and validation conditions that apply across all payout types">
     [metadata key]

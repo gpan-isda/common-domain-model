@@ -2,7 +2,7 @@
   "@model" : "cdm",
   "@type" : "cdm.event.common.TradeState",
   "@version" : "0.0.0.master-SNAPSHOT",
-  "@key" : "1b23e910",
+  "@key" : "1c96f440",
   "trade" : {
     "product" : {
       "taxonomy" : [ {
@@ -217,22 +217,24 @@
               }
             },
             "target" : [ {
-              "accumulationCondition" : [ {
-                "upperBound" : {
-                  "triggerType" : "EqualOrLess",
-                  "level" : {
-                    "value" : 5.9800,
-                    "unit" : {
-                      "currency" : {
-                        "@data" : "CNY"
-                      }
-                    },
-                    "perUnitOf" : {
-                      "currency" : {
-                        "@data" : "USD"
-                      }
-                    },
-                    "priceType" : "ExchangeRate"
+              "accumulationRegion" : [ {
+                "fixingCondition" : {
+                  "upperBound" : {
+                    "triggerType" : "EqualOrLess",
+                    "level" : {
+                      "value" : 5.9800,
+                      "unit" : {
+                        "currency" : {
+                          "@data" : "CNY"
+                        }
+                      },
+                      "perUnitOf" : {
+                        "currency" : {
+                          "@data" : "USD"
+                        }
+                      },
+                      "priceType" : "ExchangeRate"
+                    }
                   }
                 }
               } ],
