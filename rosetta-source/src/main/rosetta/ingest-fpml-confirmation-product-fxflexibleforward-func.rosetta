@@ -1,0 +1,265 @@
+namespace cdm.ingest.fpml.confirmation.product.fxflexibleforward: <"FpML FxFlexibleForward product mapping functions.">
+version "${project.version}"
+
+import cdm.base.datetime.*
+import cdm.base.math.*
+import cdm.base.staticdata.party.*
+import cdm.ingest.fpml.confirmation.common.*
+import cdm.ingest.fpml.confirmation.datetime.*
+import cdm.ingest.fpml.confirmation.party.*
+import cdm.ingest.fpml.confirmation.pricequantity.*
+import cdm.observable.asset.*
+import cdm.product.common.settlement.*
+import cdm.product.template.*
+
+import fpml.consolidated.* as fpml
+import fpml.consolidated.fx.* as fpml
+import fpml.consolidated.shared.* as fpml
+
+func MapFxFlexibleForwardCounterpartyList:
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+    output:
+        counterpartyList Counterparty (0..2)
+
+    add counterpartyList:
+        if fpmlFxFlexibleForward exists
+        then MapBuyerSellerModelToCounterpartyList(
+                fpmlFxFlexibleForward -> buyerPartyReference,
+                fpmlFxFlexibleForward -> sellerPartyReference
+            )
+
+func MapFxFlexibleForwardNonTransferableProduct:
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+        cdmCounterpartyList Counterparty (0..2)
+    output:
+        nonTransferableProduct NonTransferableProduct (0..1)
+
+    set nonTransferableProduct:
+        NonTransferableProduct {
+            identifier: MapProductIdentifierList(fpmlFxFlexibleForward -> productId),
+            taxonomy: MapProductTaxonomyList(
+                        fpmlFxFlexibleForward -> primaryAssetClass,
+                        fpmlFxFlexibleForward -> secondaryAssetClass,
+                        fpmlFxFlexibleForward -> productType
+                    ),
+            economicTerms: MapFxFlexibleForwardEconomicTerms(fpmlFxFlexibleForward, cdmCounterpartyList)
+        }
+
+func MapFxFlexibleForwardEconomicTerms:
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+        cdmCounterpartyList Counterparty (0..2)
+    output:
+        economicTerms EconomicTerms (0..1)
+
+    set economicTerms:
+        EconomicTerms {
+            payout: MapFxFlexibleForwardPayout(fpmlFxFlexibleForward, cdmCounterpartyList),
+            ...
+        }
+
+func MapFxFlexibleForwardPayout: <"The payout settles the notional currency. The buyer receives the call currency and pays the put currency.">
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+        cdmCounterpartyList Counterparty (0..2)
+    output:
+        payout Payout (0..1)
+
+    alias notionalCurrency: fpmlFxFlexibleForward -> notionalAmount -> currency
+
+    alias buyerReceivesNotional:
+        notionalCurrency -> value = fpmlFxFlexibleForward -> callCurrency -> value
+
+    set payout:
+        Payout {
+            SettlementPayout:
+                SettlementPayout {
+                    payerReceiver: if buyerReceivesNotional
+                        then MapPayerReceiver(
+                                fpmlFxFlexibleForward -> sellerPartyReference,
+                                fpmlFxFlexibleForward -> buyerPartyReference,
+                                cdmCounterpartyList
+                            )
+                        else MapPayerReceiver(
+                                fpmlFxFlexibleForward -> buyerPartyReference,
+                                fpmlFxFlexibleForward -> sellerPartyReference,
+                                cdmCounterpartyList
+                            ),
+                    priceQuantity:
+                        ResolvablePriceQuantity {
+                            quantitySchedule: MapNonNegativeMoneyToQuantityWithAddress(
+                                        fpmlFxFlexibleForward -> notionalAmount,
+                                        notionalCurrency -> value,
+                                        empty
+                                    ),
+                            priceSchedule: CreatePriceWithAddress(CreatePriceKey("exchangeRate", empty)),
+                            ...
+                        },
+                    settlementTerms: MapFxFlexibleForwardSettlementTerms(fpmlFxFlexibleForward),
+                    underlier:
+                        Underlier {
+                            Observable: MapCurrencyToObservableCashWithAddress(notionalCurrency, empty),
+                            ...
+                        },
+                    flexibleSettlementTerms: MapFxFlexibleForwardFlexibleSettlementTerms(
+                                fpmlFxFlexibleForward,
+                                cdmCounterpartyList
+                            ),
+                    ...
+                },
+            ...
+        }
+
+func MapFxFlexibleForwardSettlementTerms: <"Any residual notional settles on the final settlement date.">
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+    output:
+        settlementTerms SettlementTerms (0..1)
+
+    set settlementTerms:
+        SettlementTerms {
+            settlementType: SettlementTypeEnum -> Physical,
+            settlementDate: if fpmlFxFlexibleForward -> finalSettlementDate exists
+                then SettlementDate {
+                        valueDate: MapZoneDateTimeToDate(fpmlFxFlexibleForward -> finalSettlementDate),
+                        ...
+                    },
+            ...
+        }
+
+func MapFxFlexibleForwardFlexibleSettlementTerms:
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+        cdmCounterpartyList Counterparty (0..2)
+    output:
+        flexibleSettlementTerms FlexibleSettlementTerms (0..1)
+
+    alias executionPeriod: fpmlFxFlexibleForward -> executionPeriodDates
+
+    alias minimumExecutionAmount: fpmlFxFlexibleForward -> minimumExecutionAmount
+
+    set flexibleSettlementTerms:
+        if fpmlFxFlexibleForward exists
+        then FlexibleSettlementTerms {
+                executionRightHolder: MapCounterpartyRoleEnum(
+                            fpmlFxFlexibleForward -> buyerPartyReference -> href,
+                            cdmCounterpartyList
+                        ),
+                executionPeriodStartDate: MapFxFlexibleForwardExecutionPeriodDate(
+                            executionPeriod -> startDate,
+                            executionPeriod -> businessCenters
+                        ),
+                executionPeriodExpiryDate: MapFxFlexibleForwardExecutionPeriodDate(
+                            executionPeriod -> expiryDate,
+                            executionPeriod -> businessCenters
+                        ),
+                earliestExecutionTime: MapBusinessCenterTime(fpmlFxFlexibleForward -> earliestExecutionTime),
+                latestExecutionTime: MapBusinessCenterTime(fpmlFxFlexibleForward -> latestExecutionTime),
+                minimumExecutionQuantity: if minimumExecutionAmount exists
+                    then NonNegativeQuantity {
+                            value: minimumExecutionAmount -> amount,
+                            unit:
+                                UnitType {
+                                    currency: MapCurrency(minimumExecutionAmount -> currency),
+                                    ...
+                                },
+                            ...
+                        },
+                // FpML dateRelativeTo references the execution period, but the offset applies from each execution date
+                executionSettlementDateOffset: MapRelativeDateOffset(fpmlFxFlexibleForward -> settlementDateOffset)
+            }
+
+func MapFxFlexibleForwardExecutionPeriodDate: <"Execution period dates are unadjusted; the business centers define the execution business days.">
+    inputs:
+        fpmlDate zonedDateTime (0..1)
+        fpmlBusinessCenters fpml.BusinessCenters (0..1)
+    output:
+        adjustableOrRelativeDate AdjustableOrRelativeDate (0..1)
+
+    set adjustableOrRelativeDate:
+        if fpmlDate exists
+        then AdjustableOrRelativeDate {
+                adjustableDate:
+                    AdjustableDate {
+                        unadjustedDate: MapZoneDateTimeToDate(fpmlDate),
+                        dateAdjustments: if fpmlBusinessCenters exists
+                            then BusinessDayAdjustments {
+                                    businessDayConvention: BusinessDayConventionEnum -> NONE,
+                                    businessCenters: MapBusinessCenters(fpmlBusinessCenters)
+                                },
+                        ...
+                    },
+                ...
+            }
+
+func MapFxFlexibleForwardPriceQuantityList:
+    inputs:
+        fpmlFxFlexibleForward fpml.FxFlexibleForward (0..1)
+    output:
+        priceQuantityList PriceQuantity (0..*)
+
+    alias notionalCurrency: fpmlFxFlexibleForward -> notionalAmount -> currency
+
+    add priceQuantityList:
+        if fpmlFxFlexibleForward exists
+        then PriceQuantity {
+                price: [
+                        CreatePriceWithLocation(
+                                MapFxFlexibleForwardRateToPrice(
+                                        fpmlFxFlexibleForward -> forwardRate,
+                                        fpmlFxFlexibleForward -> settlementAmount
+                                    ),
+                                CreatePriceKey("exchangeRate", empty)
+                            )
+                    ],
+                quantity: MapNonNegativeMoneyToQuantityWithLocation(
+                            fpmlFxFlexibleForward -> notionalAmount,
+                            notionalCurrency -> value,
+                            empty
+                        ),
+                observable: MapCurrencyToObservableCashWithLocation(notionalCurrency, empty),
+                ...
+            }
+
+func MapFxFlexibleForwardRateToPrice: <"Maps the forward rate to an exchange rate price, following MapExchangeRateToPrice.">
+    inputs:
+        fpmlForwardRate fpml.FxFlexibleForwardRate (0..1)
+        fpmlSettlementAmount fpml.NonNegativeMoney (0..1)
+    output:
+        price PriceSchedule (0..1)
+
+    alias fpmlCurrency:
+        if fpmlForwardRate -> quoteBasis = Currency1PerCurrency2
+        then fpmlForwardRate -> currency1
+        else fpmlForwardRate -> currency2
+
+    alias fpmlPerCurrency:
+        if fpmlForwardRate -> quoteBasis = Currency1PerCurrency2
+        then fpmlForwardRate -> currency2
+        else fpmlForwardRate -> currency1
+
+    set price:
+        if fpmlForwardRate -> rate exists
+        then PriceSchedule {
+                value: fpmlForwardRate -> rate,
+                unit:
+                    UnitType {
+                        currency: MapCurrency(fpmlCurrency),
+                        ...
+                    },
+                perUnitOf:
+                    UnitType {
+                        currency: MapCurrency(fpmlPerCurrency),
+                        ...
+                    },
+                priceType: ExchangeRate,
+                derivedQuantity: if fpmlSettlementAmount exists
+                    then MapNonNegativeMoneyToQuantityWithLocation(
+                            fpmlSettlementAmount,
+                            fpmlSettlementAmount -> currency -> value,
+                            empty
+                        ),
+                ...
+            }

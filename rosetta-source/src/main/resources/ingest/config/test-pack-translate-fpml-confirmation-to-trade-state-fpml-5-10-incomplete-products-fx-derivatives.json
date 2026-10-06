@@ -146,17 +146,6 @@
       "runtimeError" : false
     }
   }, {
-    "id" : "fx-ex27-flexible-term-forward",
-    "name" : "fx ex27 flexible term forward",
-    "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex27-flexible-term-forward.xml",
-    "outputPath" : "ingest/output/fpml-confirmation-to-trade-state/fpml-5-10-incomplete-products-fx-derivatives/fx-ex27-flexible-term-forward.json",
-    "assertions" : {
-      "inputPathCount" : 45,
-      "outputPathCount" : 13,
-      "modelValidationFailures" : 3,
-      "runtimeError" : false
-    }
-  }, {
     "id" : "fx-ex29-fx-swap-with-multiple-identifiers",
     "name" : "fx ex29 fx swap with multiple identifiers",
     "inputPath" : "ingest/input/fpml-5-10-incomplete-products-fx-derivatives/fx-ex29-fx-swap-with-multiple-identifiers.xml",

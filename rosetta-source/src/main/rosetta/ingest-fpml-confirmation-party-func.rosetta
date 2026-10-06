@@ -23,6 +23,7 @@ import cdm.ingest.fpml.confirmation.product.equityoptiontransactionsupplement.*
 import cdm.ingest.fpml.confirmation.product.equityswaptransactionsupplement.*
 import cdm.ingest.fpml.confirmation.product.fra.*
 import cdm.ingest.fpml.confirmation.product.fxdigitaloption.*
+import cdm.ingest.fpml.confirmation.product.fxflexibleforward.*
 import cdm.ingest.fpml.confirmation.product.fxoption.*
 import cdm.ingest.fpml.confirmation.product.fxsingleleg.*
 import cdm.ingest.fpml.confirmation.product.fxswap.*
@@ -84,6 +85,7 @@ func MapCounterpartyList:
             fpml.Fra then MapFraCounterpartyList,
             fpml.FxOption then MapFxOptionCounterpartyList,
             fpml.FxDigitalOption then MapFxDigitalOptionCounterpartyList,
+            fpml.FxFlexibleForward then MapFxFlexibleForwardCounterpartyList,
             fpml.FxSingleLeg then MapFxSingleLegCounterpartyList,
             fpml.FxSwap then MapFxSwapCounterpartyList,
             fpml.FxVarianceSwap then MapFxVarianceSwapCounterpartyList,

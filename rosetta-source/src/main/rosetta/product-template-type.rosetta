@@ -403,11 +403,26 @@ type ConstituentWeight: <"A class describing the weight of each of the underlier
         if basketPercentage exists
         then basketPercentage >= 0.0 and basketPercentage <= 1.0
 
+type FlexibleSettlementTerms: <"Defines the terms of a flexible-term (window) forward: the notional may be executed in full or in part, on one or more occasions, during the execution period at the agreed forward price. Any residual notional is executed automatically at expiry and settles on the settlement date of the payout.">
+    executionRightHolder CounterpartyRoleEnum (1..1) <"The counterparty that controls the timing of executions within the execution period.">
+    executionPeriodStartDate AdjustableOrRelativeDate (1..1) <"The first day of the execution period.">
+    executionPeriodExpiryDate AdjustableOrRelativeDate (1..1) <"The last day of the execution period, inclusive. Executions may only take place on business days in the business centers given by its date adjustments.">
+    earliestExecutionTime BusinessCenterTime (0..1) <"The earliest time on an execution business day at which an execution can take place.">
+    latestExecutionTime BusinessCenterTime (0..1) <"The latest time on an execution business day at which an execution can take place.">
+    minimumExecutionQuantity NonNegativeQuantity (0..1) <"The minimum quantity that can be executed on any one occasion.">
+    executionSettlementDateOffset RelativeDateOffset (0..1) <"The offset from each execution date to the settlement date of the executed quantity.">
+
+    condition ExecutionPeriod: <"The execution period expiry date must be on or after the execution period start date.">
+        if executionPeriodStartDate -> adjustableDate -> unadjustedDate exists
+            and executionPeriodExpiryDate -> adjustableDate -> unadjustedDate exists
+        then executionPeriodExpiryDate -> adjustableDate -> unadjustedDate >= executionPeriodStartDate -> adjustableDate -> unadjustedDate
+
 type SettlementPayout extends PayoutBase: <"Represents a forward settling payout. The underlier attribute captures the underlying payout, which is settled according to the settlementTerms attribute (which is part of PayoutBase). Both FX Spot and FX Forward should use this component.">
     underlier Underlier (1..1) <"The underlying financial product that will be physically or cash settled, which can be of any type, eg an asset such as cash or a security, or the cash settlement of an index rate.">
     deliveryTerm string (0..1) <"Also called contract month or delivery month. However, it's not always a month. It is usually expressed using a code, e.g. Z23 would be the Dec 2023 contract, (Z = December). For crude oil, the corresponding contract might be called CLZ23.">
     delivery AssetDeliveryInformation (0..1) <"Contains the information relative to the delivery of the asset.">
     schedule CalculationSchedule (0..1) <"Allows the full representation of a payout by defining a set of schedule periods. It supports standard schedule customization by expressing all the dates, quantities, and pricing data in a non-parametric way.">
+    flexibleSettlementTerms FlexibleSettlementTerms (0..1) <"Defines the terms of a flexible-term (window) forward, under which the notional may be executed in full or in part during an execution period at the agreed forward price.">
 
     condition Underlier: <"The underlier for a settlement payout cannot be a NonTransferableProduct.">
         underlier as NonTransferableProduct is absent
@@ -417,6 +432,10 @@ type SettlementPayout extends PayoutBase: <"Represents a forward settling payout
         then (underlier as Basket -> basketConstituent
                 extract observable as Asset exists
                 ) all = True
+
+    condition FlexibleSettlementTerms: <"Flexible settlement terms are only applicable to a settlement payout whose underlier is cash, i.e. a foreign exchange forward.">
+        if flexibleSettlementTerms exists
+        then underlier as Cash exists
 
     condition Index: <"If the underlier is an Index, then it can only be cash settled.">
         if underlier as Index exists

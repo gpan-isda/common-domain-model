@@ -30,6 +30,7 @@ import cdm.ingest.fpml.confirmation.product.equityoptiontransactionsupplement.*
 import cdm.ingest.fpml.confirmation.product.equityswaptransactionsupplement.*
 import cdm.ingest.fpml.confirmation.product.fra.*
 import cdm.ingest.fpml.confirmation.product.fxdigitaloption.*
+import cdm.ingest.fpml.confirmation.product.fxflexibleforward.*
 import cdm.ingest.fpml.confirmation.product.fxoption.*
 import cdm.ingest.fpml.confirmation.product.fxsingleleg.*
 import cdm.ingest.fpml.confirmation.product.fxswap.*
@@ -312,6 +313,8 @@ func MapNonTransferableProduct:
                 MapFxOptionNonTransferableProduct(item, cdmCounterpartyList),
             fpml.FxDigitalOption then
                 MapFxDigitalOptionNonTransferableProduct(item, cdmCounterpartyList),
+            fpml.FxFlexibleForward then
+                MapFxFlexibleForwardNonTransferableProduct(item, cdmCounterpartyList),
             fpml.FxSingleLeg then
                 MapFxSingleLegNonTransferableProduct(item, cdmCounterpartyList),
             fpml.FxSwap then
@@ -433,6 +436,7 @@ func MapPriceQuantityList:
             fpml.EquitySwapTransactionSupplement then MapEquitySwapTransactionSupplementPriceQuantityList,
             fpml.Fra then MapFraPriceQuantityList,
             fpml.FxOption then MapFxOptionPriceQuantityList,
+            fpml.FxFlexibleForward then MapFxFlexibleForwardPriceQuantityList,
             fpml.FxSingleLeg then MapFxSingleLegPriceQuantityList,
             fpml.FxSwap then MapFxSwapPriceQuantityList,
             fpml.FxVarianceSwap then MapFxVarianceSwapPriceQuantityList,

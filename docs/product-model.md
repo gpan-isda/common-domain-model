@@ -612,6 +612,20 @@ forward-dated. In this case, the underlier specifying the asset to be settled mu
 be of `Cash` type, and the price represents the exchange rate in the purchase currency.
 Non-deliverable forwards can be represented using the cash-settlement option.
 
+Flexible-term (window) forwards are represented using the optional
+`flexibleSettlementTerms` attribute. The notional can be executed in full or in
+part, on one or more occasions, at the agreed forward price during an execution
+period. Any residual notional is executed automatically at expiry and settles on
+the settlement date of the payout. `FlexibleSettlementTerms` specifies:
+- the counterparty that controls the timing of executions;
+- the execution period start and expiry dates;
+- the earliest and latest execution times;
+- the minimum execution quantity;
+- the offset from each execution date to its settlement date.
+
+The product remains a forward rather than an option, because the holder controls
+only the timing of executions, not whether they take place.
+
 ## Tradable Product {#tradable-product}
 
 A tradable product represents a financial product that is ready to be

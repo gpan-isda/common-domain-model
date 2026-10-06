@@ -42,6 +42,8 @@ func MapTransferStateList:
     // additionalPayment
     add transfer:
         fpmlProduct switch
+            fpml.FxFlexibleForward then
+                MapPaymentListToTransferStateList(additionalPayment, Upfront),
             fpml.FxVolatilitySwap then
                 MapPaymentListToTransferStateList(additionalPayment, Upfront),
             fpml.FxVarianceSwap then
