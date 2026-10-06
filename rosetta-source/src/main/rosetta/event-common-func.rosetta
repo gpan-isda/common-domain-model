@@ -2107,6 +2107,168 @@ func Create_TerminationInstruction: <"Creates the relevant primitive instruction
             lotIdentifier: empty
         }
 
+func Create_FlexibleForwardDrawdownInstruction: <"Creates the instructions for a drawdown on a flexible-term (window) forward. The drawn quantity is removed from the flexible forward by a quantity decrease, and a new forward for the drawn quantity is executed at the same forward price, without flexible settlement terms and settling on the given settlement date. Drawing the full residual quantity closes the flexible forward.">
+    inputs:
+        tradeState TradeState (1..1) <"The flexible forward trade to draw down.">
+        drawdownQuantity NonNegativeQuantitySchedule (1..1) <"The quantity drawn, in the unit of the flexible forward quantity.">
+        executionDate date (1..1) <"The date on which the drawdown is executed.">
+        settlementDate date (1..1) <"The settlement date of the drawn quantity, usually the execution date plus the execution settlement date offset, or the final settlement date at expiry.">
+        tradeIdentifier TradeIdentifier (1..*) <"The identifier of the new forward trade.">
+    output:
+        instruction Instruction (2..2)
+
+    alias settlementPayout:
+        tradeState -> trade -> product -> economicTerms -> payout only-element as SettlementPayout
+
+    alias flexibleSettlementTerms: settlementPayout -> flexibleSettlementTerms
+
+    alias priceQuantity: tradeState -> trade -> tradeLot only-element -> priceQuantity
+
+    alias residualQuantity:
+        priceQuantity -> quantity
+            filter item -> unit = drawdownQuantity -> unit
+            then only-element
+
+    alias change:
+        PriceQuantity {
+            quantity: drawdownQuantity,
+            ...
+        }
+
+    condition FlexibleSettlementTermsExist: <"The trade must be a flexible forward.">
+        flexibleSettlementTerms exists
+
+    condition SingleQuantity: <"The flexible forward must have a single quantity, so that the drawn quantity applies to it alone.">
+        priceQuantity -> quantity count = 1
+
+    condition DrawdownQuantity: <"The drawn quantity must be positive and must not exceed the residual quantity.">
+        drawdownQuantity -> value > 0
+            and drawdownQuantity -> value <= residualQuantity -> value
+
+    condition MinimumExecutionQuantity: <"Except for the residual, the drawn quantity must be at least the minimum execution quantity.">
+        if flexibleSettlementTerms -> minimumExecutionQuantity exists
+            and drawdownQuantity -> value < residualQuantity -> value
+        then drawdownQuantity -> value >= flexibleSettlementTerms -> minimumExecutionQuantity -> value
+
+    condition ExecutionPeriod: <"The drawdown must be executed within the execution period.">
+        (if flexibleSettlementTerms -> executionPeriodStartDate -> adjustableDate -> unadjustedDate exists
+            then executionDate >= flexibleSettlementTerms -> executionPeriodStartDate -> adjustableDate -> unadjustedDate)
+            and (if flexibleSettlementTerms -> executionPeriodExpiryDate -> adjustableDate -> unadjustedDate exists
+                then executionDate <= flexibleSettlementTerms -> executionPeriodExpiryDate -> adjustableDate -> unadjustedDate)
+
+    condition SettlementDate: <"The drawn quantity cannot settle before it is executed.">
+        settlementDate >= executionDate
+
+    add instruction: <"Decreases the flexible forward by the drawn quantity.">
+        Instruction {
+            before: tradeState,
+            primitiveInstruction:
+                PrimitiveInstruction {
+                    quantityChange:
+                        QuantityChangeInstruction {
+                            change: change,
+                            direction: QuantityChangeDirectionEnum -> Decrease,
+                            lotIdentifier: empty
+                        },
+                    ...
+                }
+        }
+
+    add instruction: <"Executes a forward for the drawn quantity at the same forward price.">
+        Instruction {
+            primitiveInstruction:
+                PrimitiveInstruction {
+                    execution:
+                        ExecutionInstruction {
+                            product: Create_FlexibleForwardDrawdownProduct(
+                                        tradeState -> trade -> product,
+                                        settlementDate
+                                    ),
+                            priceQuantity: UpdateAmountForEachMatchingQuantity(
+                                        priceQuantity,
+                                        change,
+                                        QuantityChangeDirectionEnum -> Replace
+                                    ),
+                            counterparty: tradeState -> trade -> counterparty,
+                            ancillaryParty: tradeState -> trade -> ancillaryParty,
+                            parties: tradeState -> trade -> party,
+                            partyRoles: tradeState -> trade -> partyRole,
+                            executionDetails: tradeState -> trade -> executionDetails,
+                            tradeDate: executionDate,
+                            tradeIdentifier: tradeIdentifier,
+                            ...
+                        },
+                    ...
+                },
+            ...
+        }
+
+func Create_FlexibleForwardExpiryInstruction: <"Creates the instructions for the expiry of a flexible-term (window) forward, which draws down the residual quantity on the execution period expiry date.">
+    inputs:
+        tradeState TradeState (1..1) <"The flexible forward trade that expires.">
+        settlementDate date (1..1) <"The settlement date of the residual quantity, usually the final settlement date.">
+        tradeIdentifier TradeIdentifier (1..*) <"The identifier of the new forward trade.">
+    output:
+        instruction Instruction (2..2)
+
+    alias expiryDate:
+        tradeState -> trade -> product -> economicTerms -> payout only-element as SettlementPayout -> flexibleSettlementTerms -> executionPeriodExpiryDate -> adjustableDate -> unadjustedDate
+
+    add instruction:
+        Create_FlexibleForwardDrawdownInstruction(
+                tradeState,
+                tradeState -> trade -> tradeLot only-element -> priceQuantity -> quantity only-element,
+                expiryDate,
+                settlementDate,
+                tradeIdentifier
+            )
+
+func Create_FlexibleForwardDrawdownProduct: <"Creates the product of the forward resulting from a drawdown: the flexible forward product without flexible settlement terms, settling on the given settlement date.">
+    inputs:
+        product NonTransferableProduct (1..1) <"The flexible forward product.">
+        settlementDate date (1..1) <"The settlement date of the drawn quantity.">
+    output:
+        drawdownProduct NonTransferableProduct (1..1)
+
+    alias settlementPayout: product -> economicTerms -> payout only-element as SettlementPayout
+
+    set drawdownProduct: product
+
+    set drawdownProduct -> economicTerms -> payout:
+        Payout {
+            SettlementPayout:
+                SettlementPayout {
+                    payerReceiver: settlementPayout -> payerReceiver,
+                    priceQuantity: settlementPayout -> priceQuantity,
+                    principalPayment: settlementPayout -> principalPayment,
+                    settlementTerms: Create_FlexibleForwardDrawdownSettlementTerms(
+                                settlementPayout -> settlementTerms,
+                                settlementDate
+                            ),
+                    underlier: settlementPayout -> underlier,
+                    deliveryTerm: settlementPayout -> deliveryTerm,
+                    delivery: settlementPayout -> delivery,
+                    schedule: settlementPayout -> schedule,
+                    flexibleSettlementTerms: empty
+                },
+            ...
+        }
+
+func Create_FlexibleForwardDrawdownSettlementTerms: <"Creates the settlement terms of the forward resulting from a drawdown: the flexible forward settlement terms with the given settlement date.">
+    inputs:
+        settlementTerms SettlementTerms (1..1) <"The flexible forward settlement terms.">
+        settlementDate date (1..1) <"The settlement date of the drawn quantity.">
+    output:
+        drawdownSettlementTerms SettlementTerms (1..1)
+
+    set drawdownSettlementTerms: settlementTerms
+
+    set drawdownSettlementTerms -> settlementDate:
+        SettlementDate {
+            valueDate: settlementDate,
+            ...
+        }
+
 func Create_BusinessEvent: <"Creates a business event from instructions containing primitive instructions and optionally a trade state.">
     [creation BusinessEvent]
     inputs:

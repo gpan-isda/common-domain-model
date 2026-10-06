@@ -266,6 +266,16 @@ class FunctionInputCreationTest {
     }
 
     @Test
+    void testFlexibleForwardDrawdownFuncInputJson() throws IOException {
+        assertResult(creator.getFlexibleForwardDrawdownFuncInputJson());
+    }
+
+    @Test
+    void testFlexibleForwardExpiryFuncInputJson() throws IOException {
+        assertResult(creator.getFlexibleForwardExpiryFuncInputJson());
+    }
+
+    @Test
     void testPairOffInput() throws IOException {
         assertResult(creator.getPairOffInput());
     }

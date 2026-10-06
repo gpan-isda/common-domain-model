@@ -1,0 +1,720 @@
+{
+  "@model" : "cdm",
+  "@type" : "cdm.event.common.BusinessEvent",
+  "@version" : "0.0.0.master-SNAPSHOT",
+  "@key" : "8ed86fe2",
+  "intent" : "Drawdown",
+  "eventDate" : "2012-03-15",
+  "effectiveDate" : "2012-03-15",
+  "instruction" : [ {
+    "primitiveInstruction" : {
+      "quantityChange" : {
+        "change" : [ {
+          "quantity" : {
+            "value" : 2000000,
+            "unit" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            }
+          }
+        } ],
+        "direction" : "Decrease"
+      }
+    },
+    "before" : {
+      "trade" : {
+        "product" : {
+          "taxonomy" : [ {
+            "source" : "ISDA",
+            "value" : {
+              "name" : {
+                "@data" : "ForeignExchange_Spot_Forward"
+              }
+            },
+            "calculated" : true
+          } ],
+          "economicTerms" : {
+            "payout" : [ {
+              "@type" : "cdm.product.template.SettlementPayout",
+              "payerReceiver" : {
+                "payer" : "Party2",
+                "receiver" : "Party1"
+              },
+              "priceQuantity" : {
+                "quantitySchedule" : {
+                  "@ref:scoped" : "quantity-1"
+                },
+                "priceSchedule" : [ {
+                  "@ref:scoped" : "price-1"
+                } ]
+              },
+              "settlementTerms" : {
+                "settlementType" : "Physical"
+              },
+              "underlier" : {
+                "@type" : "cdm.observable.asset.Observable",
+                "@ref:scoped" : "observable-1"
+              },
+              "flexibleSettlementTerms" : {
+                "executionRightHolder" : "Party1",
+                "executionPeriodStartDate" : {
+                  "adjustableDate" : {
+                    "unadjustedDate" : "2011-09-30",
+                    "dateAdjustments" : {
+                      "businessDayConvention" : "NONE"
+                    }
+                  }
+                },
+                "executionPeriodExpiryDate" : {
+                  "adjustableDate" : {
+                    "unadjustedDate" : "2012-12-30",
+                    "dateAdjustments" : {
+                      "businessDayConvention" : "NONE"
+                    }
+                  }
+                },
+                "earliestExecutionTime" : {
+                  "hourMinuteTime" : "09:00:00",
+                  "businessCenter" : {
+                    "@data" : "GBLO"
+                  }
+                },
+                "latestExecutionTime" : {
+                  "hourMinuteTime" : "15:00:00",
+                  "businessCenter" : {
+                    "@data" : "GBLO"
+                  }
+                },
+                "minimumExecutionQuantity" : {
+                  "value" : 500000,
+                  "unit" : {
+                    "currency" : {
+                      "@data" : "EUR"
+                    }
+                  }
+                },
+                "executionSettlementDateOffset" : {
+                  "periodMultiplier" : 2,
+                  "period" : "D",
+                  "dayType" : "Business",
+                  "businessDayConvention" : "FOLLOWING",
+                  "dateRelativeTo" : {
+                    "@ref:external" : "purchasePeriod"
+                  }
+                }
+              }
+            } ]
+          }
+        },
+        "tradeLot" : [ {
+          "priceQuantity" : [ {
+            "price" : [ {
+              "@key:scoped" : "price-1",
+              "value" : 1.375,
+              "unit" : {
+                "currency" : {
+                  "@data" : "USD"
+                }
+              },
+              "perUnitOf" : {
+                "currency" : {
+                  "@data" : "EUR"
+                }
+              },
+              "priceType" : "ExchangeRate"
+            } ],
+            "quantity" : {
+              "@key:scoped" : "quantity-1",
+              "value" : 10000000,
+              "unit" : {
+                "currency" : {
+                  "@data" : "EUR"
+                }
+              }
+            },
+            "observable" : {
+              "@key:scoped" : "observable-1",
+              "@data" : {
+                "@type" : "cdm.base.staticdata.asset.common.Cash",
+                "identifier" : [ {
+                  "identifier" : {
+                    "@data" : "EUR"
+                  },
+                  "identifierType" : "CurrencyCode"
+                } ],
+                "assetType" : "Cash"
+              }
+            }
+          } ]
+        } ],
+        "counterparty" : [ {
+          "role" : "Party1",
+          "partyReference" : {
+            "@ref:external" : "partyB"
+          }
+        }, {
+          "role" : "Party2",
+          "partyReference" : {
+            "@ref:external" : "partyA"
+          }
+        } ],
+        "tradeIdentifier" : [ {
+          "issuerReference" : {
+            "@ref:external" : "partyA"
+          },
+          "assignedIdentifier" : [ {
+            "identifier" : {
+              "@scheme" : "http://www.bnpparibas.com/trade-id",
+              "@data" : "87654321"
+            }
+          } ]
+        } ],
+        "tradeDate" : {
+          "@data" : "2011-09-20"
+        },
+        "party" : [ {
+          "@key:external" : "partyA",
+          "partyId" : [ {
+            "identifier" : {
+              "@scheme" : "http://www.fpml.org/coding-scheme/external/iso17442",
+              "@data" : "5493001RKR55V4X61F71"
+            },
+            "identifierType" : "LEI"
+          } ],
+          "name" : {
+            "@data" : "BNP Paribas S.A."
+          }
+        }, {
+          "@key:external" : "partyB",
+          "partyId" : [ {
+            "identifier" : {
+              "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+              "@data" : "XXXXYYYZZ"
+            }
+          } ],
+          "name" : {
+            "@data" : "Client"
+          }
+        } ]
+      },
+      "transferHistory" : [ {
+        "transfer" : {
+          "@type" : "cdm.event.common.UnscheduledTransfer",
+          "quantity" : {
+            "value" : 123000,
+            "unit" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            }
+          },
+          "asset" : {
+            "@type" : "cdm.base.staticdata.asset.common.Cash",
+            "identifier" : [ {
+              "identifier" : {
+                "@data" : "EUR"
+              },
+              "identifierType" : "CurrencyCode"
+            } ],
+            "assetType" : "Cash"
+          },
+          "settlementDate" : {
+            "adjustedDate" : {
+              "@data" : "2011-09-30"
+            }
+          },
+          "payerReceiver" : {
+            "payerPartyReference" : {
+              "@ref:external" : "partyB"
+            },
+            "receiverPartyReference" : {
+              "@ref:external" : "partyA"
+            }
+          },
+          "transferType" : "Upfront"
+        }
+      } ]
+    }
+  }, {
+    "primitiveInstruction" : {
+      "execution" : {
+        "product" : {
+          "taxonomy" : [ {
+            "source" : "ISDA",
+            "value" : {
+              "name" : {
+                "@data" : "ForeignExchange_Spot_Forward"
+              }
+            },
+            "calculated" : true
+          } ],
+          "economicTerms" : {
+            "payout" : [ {
+              "@type" : "cdm.product.template.SettlementPayout",
+              "payerReceiver" : {
+                "payer" : "Party2",
+                "receiver" : "Party1"
+              },
+              "priceQuantity" : {
+                "quantitySchedule" : {
+                  "@ref:scoped" : "quantity-1"
+                },
+                "priceSchedule" : [ {
+                  "@ref:scoped" : "price-1"
+                } ]
+              },
+              "settlementTerms" : {
+                "settlementType" : "Physical",
+                "settlementDate" : {
+                  "valueDate" : "2012-03-19"
+                }
+              },
+              "underlier" : {
+                "@type" : "cdm.observable.asset.Observable",
+                "@ref:scoped" : "observable-1"
+              }
+            } ]
+          }
+        },
+        "priceQuantity" : [ {
+          "price" : [ {
+            "@key:scoped" : "price-1",
+            "value" : 1.375,
+            "unit" : {
+              "currency" : {
+                "@data" : "USD"
+              }
+            },
+            "perUnitOf" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            },
+            "priceType" : "ExchangeRate"
+          } ],
+          "quantity" : {
+            "@key:scoped" : "quantity-1",
+            "value" : 2000000,
+            "unit" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            }
+          },
+          "observable" : {
+            "@key:scoped" : "observable-1",
+            "@data" : {
+              "@type" : "cdm.base.staticdata.asset.common.Cash",
+              "identifier" : [ {
+                "identifier" : {
+                  "@data" : "EUR"
+                },
+                "identifierType" : "CurrencyCode"
+              } ],
+              "assetType" : "Cash"
+            }
+          }
+        } ],
+        "counterparty" : [ {
+          "role" : "Party1",
+          "partyReference" : {
+            "@ref:external" : "partyB"
+          }
+        }, {
+          "role" : "Party2",
+          "partyReference" : {
+            "@ref:external" : "partyA"
+          }
+        } ],
+        "parties" : [ {
+          "@key:external" : "partyA",
+          "partyId" : [ {
+            "identifier" : {
+              "@scheme" : "http://www.fpml.org/coding-scheme/external/iso17442",
+              "@data" : "5493001RKR55V4X61F71"
+            },
+            "identifierType" : "LEI"
+          } ],
+          "name" : {
+            "@data" : "BNP Paribas S.A."
+          }
+        }, {
+          "@key:external" : "partyB",
+          "partyId" : [ {
+            "identifier" : {
+              "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+              "@data" : "XXXXYYYZZ"
+            }
+          } ],
+          "name" : {
+            "@data" : "Client"
+          }
+        } ],
+        "tradeDate" : {
+          "@data" : "2012-03-15"
+        },
+        "tradeIdentifier" : [ {
+          "issuerReference" : {
+            "@ref:external" : "partyA"
+          },
+          "assignedIdentifier" : [ {
+            "identifier" : {
+              "@scheme" : "http://www.bnpparibas.com/trade-id",
+              "@data" : "87654321-DD1"
+            }
+          } ]
+        } ]
+      }
+    }
+  } ],
+  "eventQualifier" : "Drawdown",
+  "after" : [ {
+    "trade" : {
+      "product" : {
+        "taxonomy" : [ {
+          "source" : "ISDA",
+          "value" : {
+            "name" : {
+              "@data" : "ForeignExchange_Spot_Forward"
+            }
+          },
+          "calculated" : true
+        } ],
+        "economicTerms" : {
+          "payout" : [ {
+            "@type" : "cdm.product.template.SettlementPayout",
+            "payerReceiver" : {
+              "payer" : "Party2",
+              "receiver" : "Party1"
+            },
+            "priceQuantity" : {
+              "quantitySchedule" : {
+                "@ref:scoped" : "quantity-1"
+              },
+              "priceSchedule" : [ {
+                "@ref:scoped" : "price-1"
+              } ]
+            },
+            "settlementTerms" : {
+              "settlementType" : "Physical"
+            },
+            "underlier" : {
+              "@type" : "cdm.observable.asset.Observable",
+              "@ref:scoped" : "observable-1"
+            },
+            "flexibleSettlementTerms" : {
+              "executionRightHolder" : "Party1",
+              "executionPeriodStartDate" : {
+                "adjustableDate" : {
+                  "unadjustedDate" : "2011-09-30",
+                  "dateAdjustments" : {
+                    "businessDayConvention" : "NONE"
+                  }
+                }
+              },
+              "executionPeriodExpiryDate" : {
+                "adjustableDate" : {
+                  "unadjustedDate" : "2012-12-30",
+                  "dateAdjustments" : {
+                    "businessDayConvention" : "NONE"
+                  }
+                }
+              },
+              "earliestExecutionTime" : {
+                "hourMinuteTime" : "09:00:00",
+                "businessCenter" : {
+                  "@data" : "GBLO"
+                }
+              },
+              "latestExecutionTime" : {
+                "hourMinuteTime" : "15:00:00",
+                "businessCenter" : {
+                  "@data" : "GBLO"
+                }
+              },
+              "minimumExecutionQuantity" : {
+                "value" : 500000,
+                "unit" : {
+                  "currency" : {
+                    "@data" : "EUR"
+                  }
+                }
+              },
+              "executionSettlementDateOffset" : {
+                "periodMultiplier" : 2,
+                "period" : "D",
+                "dayType" : "Business",
+                "businessDayConvention" : "FOLLOWING",
+                "dateRelativeTo" : {
+                  "@ref:external" : "purchasePeriod"
+                }
+              }
+            }
+          } ]
+        }
+      },
+      "tradeLot" : [ {
+        "priceQuantity" : [ {
+          "price" : [ {
+            "@key:scoped" : "price-1",
+            "value" : 1.375,
+            "unit" : {
+              "currency" : {
+                "@data" : "USD"
+              }
+            },
+            "perUnitOf" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            },
+            "priceType" : "ExchangeRate"
+          } ],
+          "quantity" : {
+            "@key:scoped" : "quantity-1",
+            "value" : 8000000,
+            "unit" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            }
+          },
+          "observable" : {
+            "@key:scoped" : "observable-1",
+            "@data" : {
+              "@type" : "cdm.base.staticdata.asset.common.Cash",
+              "identifier" : [ {
+                "identifier" : {
+                  "@data" : "EUR"
+                },
+                "identifierType" : "CurrencyCode"
+              } ],
+              "assetType" : "Cash"
+            }
+          }
+        } ]
+      } ],
+      "counterparty" : [ {
+        "role" : "Party1",
+        "partyReference" : {
+          "@ref:external" : "partyB"
+        }
+      }, {
+        "role" : "Party2",
+        "partyReference" : {
+          "@ref:external" : "partyA"
+        }
+      } ],
+      "tradeIdentifier" : [ {
+        "issuerReference" : {
+          "@ref:external" : "partyA"
+        },
+        "assignedIdentifier" : [ {
+          "identifier" : {
+            "@scheme" : "http://www.bnpparibas.com/trade-id",
+            "@data" : "87654321"
+          }
+        } ]
+      } ],
+      "tradeDate" : {
+        "@data" : "2011-09-20"
+      },
+      "party" : [ {
+        "@key:external" : "partyA",
+        "partyId" : [ {
+          "identifier" : {
+            "@scheme" : "http://www.fpml.org/coding-scheme/external/iso17442",
+            "@data" : "5493001RKR55V4X61F71"
+          },
+          "identifierType" : "LEI"
+        } ],
+        "name" : {
+          "@data" : "BNP Paribas S.A."
+        }
+      }, {
+        "@key:external" : "partyB",
+        "partyId" : [ {
+          "identifier" : {
+            "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+            "@data" : "XXXXYYYZZ"
+          }
+        } ],
+        "name" : {
+          "@data" : "Client"
+        }
+      } ]
+    },
+    "transferHistory" : [ {
+      "transfer" : {
+        "@type" : "cdm.event.common.UnscheduledTransfer",
+        "quantity" : {
+          "value" : 123000,
+          "unit" : {
+            "currency" : {
+              "@data" : "EUR"
+            }
+          }
+        },
+        "asset" : {
+          "@type" : "cdm.base.staticdata.asset.common.Cash",
+          "identifier" : [ {
+            "identifier" : {
+              "@data" : "EUR"
+            },
+            "identifierType" : "CurrencyCode"
+          } ],
+          "assetType" : "Cash"
+        },
+        "settlementDate" : {
+          "adjustedDate" : {
+            "@data" : "2011-09-30"
+          }
+        },
+        "payerReceiver" : {
+          "payerPartyReference" : {
+            "@ref:external" : "partyB"
+          },
+          "receiverPartyReference" : {
+            "@ref:external" : "partyA"
+          }
+        },
+        "transferType" : "Upfront"
+      }
+    } ]
+  }, {
+    "trade" : {
+      "product" : {
+        "taxonomy" : [ {
+          "source" : "ISDA",
+          "value" : {
+            "name" : {
+              "@data" : "ForeignExchange_Spot_Forward"
+            }
+          },
+          "calculated" : true
+        } ],
+        "economicTerms" : {
+          "payout" : [ {
+            "@type" : "cdm.product.template.SettlementPayout",
+            "payerReceiver" : {
+              "payer" : "Party2",
+              "receiver" : "Party1"
+            },
+            "priceQuantity" : {
+              "quantitySchedule" : {
+                "@ref:scoped" : "quantity-1"
+              },
+              "priceSchedule" : [ {
+                "@ref:scoped" : "price-1"
+              } ]
+            },
+            "settlementTerms" : {
+              "settlementType" : "Physical",
+              "settlementDate" : {
+                "valueDate" : "2012-03-19"
+              }
+            },
+            "underlier" : {
+              "@type" : "cdm.observable.asset.Observable",
+              "@ref:scoped" : "observable-1"
+            }
+          } ]
+        }
+      },
+      "tradeLot" : [ {
+        "priceQuantity" : [ {
+          "price" : [ {
+            "@key:scoped" : "price-1",
+            "value" : 1.375,
+            "unit" : {
+              "currency" : {
+                "@data" : "USD"
+              }
+            },
+            "perUnitOf" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            },
+            "priceType" : "ExchangeRate"
+          } ],
+          "quantity" : {
+            "@key:scoped" : "quantity-1",
+            "value" : 2000000,
+            "unit" : {
+              "currency" : {
+                "@data" : "EUR"
+              }
+            }
+          },
+          "observable" : {
+            "@key:scoped" : "observable-1",
+            "@data" : {
+              "@type" : "cdm.base.staticdata.asset.common.Cash",
+              "identifier" : [ {
+                "identifier" : {
+                  "@data" : "EUR"
+                },
+                "identifierType" : "CurrencyCode"
+              } ],
+              "assetType" : "Cash"
+            }
+          }
+        } ]
+      } ],
+      "counterparty" : [ {
+        "role" : "Party1",
+        "partyReference" : {
+          "@ref:external" : "partyB"
+        }
+      }, {
+        "role" : "Party2",
+        "partyReference" : {
+          "@ref:external" : "partyA"
+        }
+      } ],
+      "tradeIdentifier" : [ {
+        "issuerReference" : {
+          "@ref:external" : "partyA"
+        },
+        "assignedIdentifier" : [ {
+          "identifier" : {
+            "@scheme" : "http://www.bnpparibas.com/trade-id",
+            "@data" : "87654321-DD1"
+          }
+        } ]
+      } ],
+      "tradeDate" : {
+        "@data" : "2012-03-15"
+      },
+      "party" : [ {
+        "@key:external" : "partyA",
+        "partyId" : [ {
+          "identifier" : {
+            "@scheme" : "http://www.fpml.org/coding-scheme/external/iso17442",
+            "@data" : "5493001RKR55V4X61F71"
+          },
+          "identifierType" : "LEI"
+        } ],
+        "name" : {
+          "@data" : "BNP Paribas S.A."
+        }
+      }, {
+        "@key:external" : "partyB",
+        "partyId" : [ {
+          "identifier" : {
+            "@scheme" : "http://www.fpml.org/coding-scheme/dummy-party-id",
+            "@data" : "XXXXYYYZZ"
+          }
+        } ],
+        "name" : {
+          "@data" : "Client"
+        }
+      } ]
+    },
+    "state" : {
+      "positionState" : "Executed"
+    }
+  } ]
+}

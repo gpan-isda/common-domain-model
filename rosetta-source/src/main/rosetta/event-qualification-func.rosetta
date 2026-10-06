@@ -212,6 +212,19 @@ func Qualify_Exercise: <"The qualification of an exercise event from the fact th
                 or (businessEvent -> instruction count = 1
                     and businessEvent -> instruction -> primitiveInstruction -> exercise exists))
 
+func Qualify_Drawdown: <"The qualification of a drawdown event on a flexible-term (window) forward from the fact that (i) the intent is Drawdown, (ii) a quantity decrease applies to a trade with flexible settlement terms, and (iii) a new trade is executed for the drawn quantity.">
+    [qualification BusinessEvent]
+    inputs:
+        businessEvent BusinessEvent (1..1)
+    output:
+        is_event boolean (1..1)
+    set is_event:
+        businessEvent -> intent = EventIntentEnum -> Drawdown
+            and businessEvent -> instruction count = 2
+            and businessEvent -> instruction -> primitiveInstruction -> quantityChange -> direction all = QuantityChangeDirectionEnum -> Decrease
+            and businessEvent -> instruction -> primitiveInstruction -> execution exists
+            and businessEvent -> instruction -> before -> trade -> product -> economicTerms -> payout as SettlementPayout -> flexibleSettlementTerms exists
+
 func Qualify_FullReturn: <"The qualification of a full return event from the fact that (i) a quantityChange primitive and a transfer primitive exists, (ii) an assetPayout exists, (iii) the remaining quantity = 0, and (iv) the closedState of the contract is Terminated.">
     [qualification BusinessEvent]
     inputs:

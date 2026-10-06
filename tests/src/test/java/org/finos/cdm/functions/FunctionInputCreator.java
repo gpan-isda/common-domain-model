@@ -111,6 +111,10 @@ public class FunctionInputCreator {
     private Create_AdjustmentPrimitiveInstruction createAdjustmentInstruction;
     @Inject
     private Create_SubstitutionPrimitiveInstruction createSubstitutionInstruction;
+    @Inject
+    private Create_FlexibleForwardDrawdownInstruction createFlexibleForwardDrawdownInstruction;
+    @Inject
+    private Create_FlexibleForwardExpiryInstruction createFlexibleForwardExpiryInstruction;
 
     public static void main(String[] args) {
         try {
@@ -1932,6 +1936,56 @@ public class FunctionInputCreator {
 
         CreateBusinessEventInput actual = new CreateBusinessEventInput(rekeyedPairOffInstructions, null, tradeDate, tradeDate);
         return new ExpectationResult<>("functions/repo-and-bond/pair-off-input.json", actual);
+    }
+
+    ExpectationResult<CreateBusinessEventInput> getFlexibleForwardDrawdownFuncInputJson() throws IOException {
+        TradeState tradeState = getFlexibleForwardTradeState();
+        NonNegativeQuantitySchedule drawdownQuantity = NonNegativeQuantitySchedule.builder()
+                .setValue(BigDecimal.valueOf(2000000))
+                .setUnit(UnitType.builder()
+                        .setCurrency(FieldWithMetaString.builder().setValue("EUR")))
+                .build();
+        Date executionDate = Date.of(2012, 3, 15);
+
+        List<? extends Instruction> instructions = createFlexibleForwardDrawdownInstruction.evaluate(tradeState,
+                drawdownQuantity,
+                executionDate,
+                Date.of(2012, 3, 19),
+                Lists.newArrayList(getDrawdownTradeIdentifier(tradeState, "-DD1")));
+
+        CreateBusinessEventInput input = new CreateBusinessEventInput(reKeyInstructions(instructions), EventIntentEnum.DRAWDOWN, executionDate, executionDate);
+        return new ExpectationResult<>("functions/business-event/drawdown/drawdown-fx-flexible-forward-func-input.json", input);
+    }
+
+    ExpectationResult<CreateBusinessEventInput> getFlexibleForwardExpiryFuncInputJson() throws IOException {
+        TradeState tradeState = getFlexibleForwardTradeState();
+        Date expiryDate = Date.of(2012, 12, 30);
+
+        List<? extends Instruction> instructions = createFlexibleForwardExpiryInstruction.evaluate(tradeState,
+                Date.of(2013, 1, 2),
+                Lists.newArrayList(getDrawdownTradeIdentifier(tradeState, "-EXP")));
+
+        CreateBusinessEventInput input = new CreateBusinessEventInput(reKeyInstructions(instructions), EventIntentEnum.DRAWDOWN, expiryDate, expiryDate);
+        return new ExpectationResult<>("functions/business-event/drawdown/drawdown-expiry-fx-flexible-forward-func-input.json", input);
+    }
+
+    private TradeState getFlexibleForwardTradeState() throws IOException {
+        return ResourcesUtils.getObject(TradeState.class, "ingest/output/fpml-confirmation-to-trade-state/fpml-5-13-products-fx-derivatives/fx-ex27-flexible-term-forward.json");
+    }
+
+    private TradeIdentifier getDrawdownTradeIdentifier(TradeState tradeState, String suffix) {
+        TradeIdentifier.TradeIdentifierBuilder tradeIdentifier = tradeState.getTrade().getTradeIdentifier().get(0).toBuilder();
+        FieldWithMetaString.FieldWithMetaStringBuilder identifier = tradeIdentifier.getAssignedIdentifier().get(0).getIdentifier();
+        identifier.setValue(identifier.getValue() + suffix);
+        return tradeIdentifier.build();
+    }
+
+    private List<Instruction> reKeyInstructions(List<? extends Instruction> instructions) {
+        return instructions.stream()
+                .map(Instruction::toBuilder)
+                .map(ResourcesUtils::reKey)
+                .map(Instruction::build)
+                .collect(Collectors.toList());
     }
 
     ExpectationResult<CreateBusinessEventInput> getCancellationInput() throws IOException {

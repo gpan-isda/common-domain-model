@@ -379,6 +379,26 @@
     "nativeFunction": true
   },
   {
+    "group": "drawdown-business-event",
+    "name": "Drawdown - FX Flexible Forward",
+    "description": "Drawdown - FX Flexible Forward",
+    "inputFile": "functions/business-event/drawdown/drawdown-fx-flexible-forward-func-input.json",
+    "expectedOutputFile": "functions/business-event/drawdown/drawdown-fx-flexible-forward-func-output.json",
+    "markDownFile": "functions/business-event/drawdown/drawdown-fx-flexible-forward-func.md",
+    "executableFunctionClass": "cdm.event.common.functions.Create_BusinessEvent",
+    "nativeFunction": true
+  },
+  {
+    "group": "drawdown-business-event",
+    "name": "Drawdown at Expiry - FX Flexible Forward",
+    "description": "Drawdown at Expiry - FX Flexible Forward",
+    "inputFile": "functions/business-event/drawdown/drawdown-expiry-fx-flexible-forward-func-input.json",
+    "expectedOutputFile": "functions/business-event/drawdown/drawdown-expiry-fx-flexible-forward-func-output.json",
+    "markDownFile": "functions/business-event/drawdown/drawdown-expiry-fx-flexible-forward-func.md",
+    "executableFunctionClass": "cdm.event.common.functions.Create_BusinessEvent",
+    "nativeFunction": true
+  },
+  {
     "group": "index-transition-business-event",
     "name": "Vanilla Swap",
     "description": "Vanilla Swap",

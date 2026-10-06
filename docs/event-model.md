@@ -859,6 +859,7 @@ enum EventIntentEnum:
    CorporateActionAdjustment
    CreditEvent
    Decrease
+   Drawdown
    EarlyTerminationProvision
    Increase
    IndexTransition
